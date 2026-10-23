@@ -1,0 +1,106 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RAZA TECHNOLOGIES AI</title>
+<style>
+:root{--gold:#d4af37;--bg:#090b0a;--panel:#141715;--muted:#a5aca6}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:#f5f5f0;font-family:Arial,sans-serif}
+header{padding:22px 7%;border-bottom:1px solid #333;display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap}
+.brand{color:var(--gold);font-weight:800;font-size:20px}
+.tag{color:var(--muted);font-size:12px;margin-top:6px}
+.pill{border:1px solid var(--gold);color:var(--gold);padding:8px 12px;border-radius:30px;font-size:12px}
+main{max-width:1050px;margin:auto;padding:42px 20px}
+.hero{text-align:center;margin:20px auto 38px}
+.hero h1{font-size:clamp(30px,6vw,52px);margin:0 0 14px}
+.hero h1 span{color:var(--gold)}
+.hero p{color:var(--muted);line-height:1.7}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
+.card{background:var(--panel);border:1px solid #303630;border-radius:14px;padding:22px}
+.card h2{font-size:18px;margin-top:0}
+label{display:block;font-size:13px;color:#d0d4d0;margin:14px 0 7px}
+input,textarea,select{width:100%;padding:12px;background:#090c0a;color:white;border:1px solid #414841;border-radius:8px;font:inherit}
+textarea{min-height:90px;resize:vertical}
+button{background:var(--gold);color:#111;border:0;border-radius:8px;padding:12px 16px;font-weight:bold;cursor:pointer;margin-top:14px;width:100%}
+button:hover{filter:brightness(1.1)}
+.output{white-space:pre-wrap;overflow-wrap:anywhere;background:#090c0a;border:1px solid #414841;border-radius:8px;padding:12px;margin-top:14px;min-height:55px;color:#f4f4ef;font-size:14px}
+.small{font-size:12px;color:var(--muted);line-height:1.6}
+footer{text-align:center;border-top:1px solid #303630;padding:24px;color:var(--muted);font-size:12px}
+</style>
+</head>
+<body>
+<header>
+  <div><div class="brand">RAZA TECHNOLOGIES AI</div><div class="tag">BUILD SMART. THINK BIG.</div></div>
+  <div class="pill">BUSINESS ASSISTANT · DEMO</div>
+</header>
+<main>
+  <section class="hero">
+    <h1>Your Business, <span>Made Smarter.</span></h1>
+    <p>Create business content in seconds.<br>Simple tools for entrepreneurs, shops and online brands.</p>
+  </section>
+  <div class="grid">
+    <section class="card">
+      <h2>✍️ Social Media Post</h2>
+      <label for="postBusiness">Business or product name</label>
+      <input id="postBusiness" placeholder="e.g. Beauty Store">
+      <label for="postTopic">Post topic</label>
+      <input id="postTopic" placeholder="e.g. New product launch">
+      <label for="postLang">Language</label>
+      <select id="postLang"><option value="English">English</option><option value="Roman Urdu">Roman Urdu</option><option value="Urdu">Urdu</option></select>
+      <button onclick="makePost()">Generate Post</button>
+      <div id="postOut" class="output">Your post will appear here.</div>
+      <button onclick="copyOutput('postOut')">Copy Post</button>
+    </section>
+    <section class="card">
+      <h2>📢 Advertisement Writer</h2>
+      <label for="adProduct">Product or service</label>
+      <input id="adProduct" placeholder="e.g. Herbal Hair Oil">
+      <label for="adBenefit">Main benefit or offer</label>
+      <input id="adBenefit" placeholder="e.g. Special launch offer">
+      <button onclick="makeAd()">Generate Advertisement</button>
+      <div id="adOut" class="output">Your advertisement will appear here.</div>
+      <button onclick="copyOutput('adOut')">Copy Advertisement</button>
+    </section>
+    <section class="card">
+      <h2>🛍️ Product Description</h2>
+      <label for="descProduct">Product name</label>
+      <input id="descProduct" placeholder="Enter product name">
+      <label for="descDetails">Product details</label>
+      <textarea id="descDetails" placeholder="Describe ingredients, features or uses"></textarea>
+      <button onclick="makeDescription()">Generate Description</button>
+      <div id="descOut" class="output">Your description will appear here.</div>
+      <button onclick="copyOutput('descOut')">Copy Description</button>
+    </section>
+  </div>
+  <p class="small" style="text-align:center;margin-top:25px">Free prototype · Runs in your browser · No API key required for this demo. Outputs use built-in templates, not a connected AI model.</p>
+</main>
+<footer>© 2026 RAZA TECHNOLOGIES AI · BUILD SMART. THINK BIG.</footer>
+<script>
+function val(id){return document.getElementById(id).value.trim()}
+function safeText(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function show(id,text){document.getElementById(id).textContent=text}
+function makePost(){
+ const b=val('postBusiness')||'Our Business',t=val('postTopic')||'Something exciting',l=val('postLang');
+ if(l==='Roman Urdu')show('postOut',`${b} ki taraf se khushkhabri! 🎉\n\n${t}\n\nMazeed maloomat ke liye humse rabta karein.\n\n#${b.replace(/\s+/g,'')} #NewUpdate`);
+ else if(l==='Urdu')show('postOut',`${b} کی جانب سے خوشخبری! 🎉\n\n${t}\n\nمزید معلومات کے لیے ہم سے رابطہ کریں۔`);
+ else show('postOut',`✨ NEWS FROM ${b.toUpperCase()} ✨\n\n${t}\n\nDiscover more and get in touch with us today!\n\n#${b.replace(/\s+/g,'')} #Business #NewUpdate`);
+}
+function makeAd(){
+ const p=val('adProduct')||'Our Product',b=val('adBenefit')||'Discover something new';
+ show('adOut',`✨ DISCOVER ${p.toUpperCase()} ✨\n\n${b}\n\nMake your next choice with confidence. Contact us today to learn more about ${p}.\n\n📩 Message us for details.`);
+}
+function makeDescription(){
+ const p=val('descProduct')||'Our Product',d=val('descDetails')||'A product designed with your needs in mind.';
+ show('descOut',`${p}\n\n${d}\n\nLearn more about ${p} and contact our team for product information, availability and pricing.`);
+}
+async function copyOutput(id){
+ const text=document.getElementById(id).textContent;
+ try{await navigator.clipboard.writeText(text);alert('Copied!')}
+ catch(e){alert('Please select the output text and copy it manually.')}
+}
+</script>
+</body>
+</html>
