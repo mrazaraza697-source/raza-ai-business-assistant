@@ -3,104 +3,149 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RAZA TECHNOLOGIES AI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RAZA TECHNOLOGIES AI | Business Assistant</title>
 <style>
-:root{--gold:#d4af37;--bg:#090b0a;--panel:#141715;--muted:#a5aca6}
+:root{--bg:#090a0c;--panel:#111317;--panel2:#171a20;--gold:#d6b15e;--gold2:#f1d894;--text:#f6f4ee;--muted:#a5a7ae;--line:#292c33}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:#f5f5f0;font-family:Arial,sans-serif}
-header{padding:22px 7%;border-bottom:1px solid #333;display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap}
-.brand{color:var(--gold);font-weight:800;font-size:20px}
-.tag{color:var(--muted);font-size:12px;margin-top:6px}
-.pill{border:1px solid var(--gold);color:var(--gold);padding:8px 12px;border-radius:30px;font-size:12px}
-main{max-width:1050px;margin:auto;padding:42px 20px}
-.hero{text-align:center;margin:20px auto 38px}
-.hero h1{font-size:clamp(30px,6vw,52px);margin:0 0 14px}
-.hero h1 span{color:var(--gold)}
-.hero p{color:var(--muted);line-height:1.7}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
-.card{background:var(--panel);border:1px solid #303630;border-radius:14px;padding:22px}
-.card h2{font-size:18px;margin-top:0}
-label{display:block;font-size:13px;color:#d0d4d0;margin:14px 0 7px}
-input,textarea,select{width:100%;padding:12px;background:#090c0a;color:white;border:1px solid #414841;border-radius:8px;font:inherit}
-textarea{min-height:90px;resize:vertical}
-button{background:var(--gold);color:#111;border:0;border-radius:8px;padding:12px 16px;font-weight:bold;cursor:pointer;margin-top:14px;width:100%}
-button:hover{filter:brightness(1.1)}
-.output{white-space:pre-wrap;overflow-wrap:anywhere;background:#090c0a;border:1px solid #414841;border-radius:8px;padding:12px;margin-top:14px;min-height:55px;color:#f4f4ef;font-size:14px}
-.small{font-size:12px;color:var(--muted);line-height:1.6}
-footer{text-align:center;border-top:1px solid #303630;padding:24px;color:var(--muted);font-size:12px}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,Arial,sans-serif}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+.app{display:flex;min-height:100vh}
+.sidebar{width:245px;background:#0d0f12;border-right:1px solid var(--line);padding:24px 16px;flex-shrink:0}
+.logo{display:flex;gap:11px;align-items:center;padding:4px 7px 25px;border-bottom:1px solid var(--line)}
+.logo-mark{width:42px;height:42px;border:1px solid var(--gold);border-radius:12px;display:grid;place-items:center;color:var(--gold);font-weight:900;font-size:20px}
+.logo-title{font-weight:800;font-size:13px;line-height:1.5;letter-spacing:.5px}
+.logo-title span{color:var(--gold)}
+.logo-sub{font-size:10px;color:var(--muted);margin-top:3px}
+.nav-label{font-size:10px;color:#777b85;letter-spacing:1.5px;margin:26px 10px 10px}
+.nav{width:100%;display:flex;gap:11px;align-items:center;text-align:left;border:1px solid transparent;background:transparent;color:#b8bbc3;padding:12px;border-radius:9px;margin:3px 0}
+.nav:hover,.nav.active{background:#201c12;border-color:#554522;color:var(--gold2)}
+.side-bottom{margin-top:35px;border:1px solid var(--line);border-radius:12px;padding:13px;color:var(--muted);font-size:12px;line-height:1.7}
+.side-bottom strong{color:var(--gold)}
+main{flex:1;min-width:0}
+.topbar{height:75px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 32px;gap:15px}
+.topbar h2{font-size:17px;margin:0}
+.status{font-size:11px;color:var(--gold);border:1px solid #554522;border-radius:30px;padding:8px 11px}
+.content{max-width:1200px;margin:auto;padding:32px}
+.welcome{padding:27px;border:1px solid #4b4028;border-radius:16px;background:linear-gradient(120deg,#201b10,#111317 65%);margin-bottom:27px}
+.eyebrow{color:var(--gold);font-size:11px;letter-spacing:2px;font-weight:bold}
+.welcome h1{font-size:clamp(25px,4vw,38px);margin:12px 0}
+.welcome h1 span{color:var(--gold)}
+.welcome p{color:var(--muted);line-height:1.7;margin-bottom:0;max-width:640px}
+.section-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:27px 0 15px}
+.section-head h2{font-size:18px;margin:0}
+.section-head span{font-size:12px;color:var(--muted)}
+.tools{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;min-width:0}
+.card:hover{border-color:#68552d}
+.tool-icon{height:42px;width:42px;display:grid;place-items:center;background:#252012;border:1px solid #4a3c1e;border-radius:11px;font-size:20px}
+.card h3{font-size:16px;margin:16px 0 8px}
+.card p{color:var(--muted);font-size:12px;line-height:1.6;min-height:38px}
+label{display:block;color:#d0d1d6;font-size:12px;margin:14px 0 7px}
+input,textarea,select{width:100%;background:#0b0d10;color:var(--text);border:1px solid #343740;border-radius:8px;padding:11px;outline:none}
+input:focus,textarea:focus,select:focus{border-color:var(--gold)}
+textarea{min-height:84px;resize:vertical}
+.btn{border:1px solid var(--gold);background:var(--gold);color:#16130b;border-radius:8px;padding:11px 13px;font-size:12px;font-weight:800;width:100%;margin-top:14px}
+.btn:hover{background:var(--gold2)}
+.btn.secondary{background:transparent;color:var(--gold);margin-top:8px}
+.output{white-space:pre-wrap;overflow-wrap:anywhere;background:#0a0c0f;border:1px solid #343740;border-radius:8px;padding:12px;margin-top:13px;min-height:65px;color:#e9e7e0;font-size:12px;line-height:1.7}
+.notice{border:1px solid var(--line);background:#101216;border-radius:12px;padding:15px;margin-top:20px;color:var(--muted);font-size:12px;line-height:1.7}
+.notice strong{color:var(--gold)}
+.hidden{display:none!important}
+footer{padding:24px 32px;border-top:1px solid var(--line);font-size:11px;color:#777b85}
+@media(max-width:1000px){.tools{grid-template-columns:repeat(2,minmax(0,1fr))}.sidebar{width:205px}.content{padding:23px}}
+@media(max-width:680px){.app{display:block}.sidebar{width:100%;padding:13px;border-right:0;border-bottom:1px solid var(--line)}.logo{padding-bottom:12px}.nav-label,.side-bottom{display:none}.navs{display:flex;overflow-x:auto;gap:5px;padding-top:10px}.nav{white-space:nowrap;width:auto;margin:0;padding:10px;font-size:12px}.topbar{height:60px;padding:0 17px}.content{padding:17px}.tools{grid-template-columns:1fr}.welcome{padding:21px}.card p{min-height:0}footer{padding:20px 17px}}
 </style>
 </head>
 <body>
-<header>
-  <div><div class="brand">RAZA TECHNOLOGIES AI</div><div class="tag">BUILD SMART. THINK BIG.</div></div>
-  <div class="pill">BUSINESS ASSISTANT · DEMO</div>
-</header>
-<main>
-  <section class="hero">
-    <h1>Your Business, <span>Made Smarter.</span></h1>
-    <p>Create business content in seconds.<br>Simple tools for entrepreneurs, shops and online brands.</p>
-  </section>
-  <div class="grid">
-    <section class="card">
-      <h2>✍️ Social Media Post</h2>
-      <label for="postBusiness">Business or product name</label>
-      <input id="postBusiness" placeholder="e.g. Beauty Store">
-      <label for="postTopic">Post topic</label>
-      <input id="postTopic" placeholder="e.g. New product launch">
-      <label for="postLang">Language</label>
-      <select id="postLang"><option value="English">English</option><option value="Roman Urdu">Roman Urdu</option><option value="Urdu">Urdu</option></select>
-      <button onclick="makePost()">Generate Post</button>
-      <div id="postOut" class="output">Your post will appear here.</div>
-      <button onclick="copyOutput('postOut')">Copy Post</button>
-    </section>
-    <section class="card">
-      <h2>📢 Advertisement Writer</h2>
-      <label for="adProduct">Product or service</label>
-      <input id="adProduct" placeholder="e.g. Herbal Hair Oil">
-      <label for="adBenefit">Main benefit or offer</label>
-      <input id="adBenefit" placeholder="e.g. Special launch offer">
-      <button onclick="makeAd()">Generate Advertisement</button>
-      <div id="adOut" class="output">Your advertisement will appear here.</div>
-      <button onclick="copyOutput('adOut')">Copy Advertisement</button>
-    </section>
-    <section class="card">
-      <h2>🛍️ Product Description</h2>
-      <label for="descProduct">Product name</label>
-      <input id="descProduct" placeholder="Enter product name">
-      <label for="descDetails">Product details</label>
-      <textarea id="descDetails" placeholder="Describe ingredients, features or uses"></textarea>
-      <button onclick="makeDescription()">Generate Description</button>
-      <div id="descOut" class="output">Your description will appear here.</div>
-      <button onclick="copyOutput('descOut')">Copy Description</button>
-    </section>
+<div class="app">
+<aside class="sidebar">
+  <div class="logo">
+    <div class="logo-mark">R</div>
+    <div><div class="logo-title">RAZA <span>TECHNOLOGIES</span> AI</div><div class="logo-sub">BUILD SMART. THINK BIG.</div></div>
   </div>
-  <p class="small" style="text-align:center;margin-top:25px">Free prototype · Runs in your browser · No API key required for this demo. Outputs use built-in templates, not a connected AI model.</p>
+  <div class="nav-label">WORKSPACE</div>
+  <div class="navs">
+    <button class="nav active" onclick="showPage('dashboard',this)">◈ Dashboard</button>
+    <button class="nav" onclick="showPage('tools',this)">✧ AI Tools</button>
+    <button class="nav" onclick="showPage('history',this)">◷ History</button>
+    <button class="nav" onclick="showPage('settings',this)">⚙ Settings</button>
+  </div>
+  <div class="side-bottom"><strong>DEMO VERSION</strong><br>Your business workspace is ready.<br>Generated content uses local templates.</div>
+</aside>
+<main>
+  <header class="topbar"><h2 id="pageTitle">Dashboard</h2><div class="status">● LOCAL DEMO</div></header>
+  <div class="content">
+    <section id="dashboardPage">
+      <div class="welcome">
+        <div class="eyebrow">YOUR AI BUSINESS WORKSPACE</div>
+        <h1>Build smarter.<br><span>Grow faster.</span></h1>
+        <p>Welcome to RAZA TECHNOLOGIES AI. Create social content, advertisements and product descriptions in one simple workspace.</p>
+      </div>
+      <div class="section-head"><h2>Workspace overview</h2><span>3 available tools</span></div>
+      <div class="tools">
+        <div class="card"><div class="tool-icon">✍</div><h3>Social Media Posts</h3><p>Create ready-to-use posts for your business and products.</p><button class="btn" onclick="showPage('tools',null)">Open tool →</button></div>
+        <div class="card"><div class="tool-icon">✦</div><h3>Advertisement Writer</h3><p>Draft promotional messages for your offers and services.</p><button class="btn" onclick="showPage('tools',null)">Open tool →</button></div>
+        <div class="card"><div class="tool-icon">▤</div><h3>Product Descriptions</h3><p>Prepare clear descriptions for your products and shop.</p><button class="btn" onclick="showPage('tools',null)">Open tool →</button></div>
+      </div>
+    </section>
+    <section id="toolsPage" class="hidden">
+      <div class="section-head"><h2>AI Content Tools</h2><span>Template-based demo</span></div>
+      <div class="tools">
+        <div class="card"><div class="tool-icon">✍</div><h3>Social Media Post</h3><p>Prepare a post for your audience.</p>
+          <label for="postBusiness">Business or product name</label><input id="postBusiness" placeholder="e.g. Beauty Store">
+          <label for="postTopic">Post topic</label><input id="postTopic" placeholder="e.g. New product launch">
+          <label for="postLang">Language</label><select id="postLang"><option>English</option><option>Roman Urdu</option><option>Urdu</option></select>
+          <button class="btn" onclick="makePost()">Generate Post</button><div id="postOut" class="output">Your post will appear here.</div><button class="btn secondary" onclick="copyOutput('postOut')">Copy Post</button>
+        </div>
+        <div class="card"><div class="tool-icon">✦</div><h3>Advertisement Writer</h3><p>Create a short promotional message.</p>
+          <label for="adProduct">Product or service</label><input id="adProduct" placeholder="e.g. Herbal Hair Oil">
+          <label for="adBenefit">Main benefit or offer</label><input id="adBenefit" placeholder="e.g. Special launch offer">
+          <button class="btn" onclick="makeAd()">Generate Advertisement</button><div id="adOut" class="output">Your advertisement will appear here.</div><button class="btn secondary" onclick="copyOutput('adOut')">Copy Advertisement</button>
+        </div>
+        <div class="card"><div class="tool-icon">▤</div><h3>Product Description</h3><p>Write a description for your product listing.</p>
+          <label for="descProduct">Product name</label><input id="descProduct" placeholder="Enter product name">
+          <label for="descDetails">Product details</label><textarea id="descDetails" placeholder="Features, ingredients or uses"></textarea>
+          <button class="btn" onclick="makeDescription()">Generate Description</button><div id="descOut" class="output">Your description will appear here.</div><button class="btn secondary" onclick="copyOutput('descOut')">Copy Description</button>
+        </div>
+      </div>
+    </section>
+    <section id="historyPage" class="hidden">
+      <div class="section-head"><h2>Recent Activity</h2><span>This browser session</span></div>
+      <div class="card"><p id="historyText">Your generated content will appear here after you use a tool.</p><button class="btn secondary" onclick="clearHistory()">Clear History</button></div>
+    </section>
+    <section id="settingsPage" class="hidden">
+      <div class="section-head"><h2>Workspace Settings</h2></div>
+      <div class="card"><h3>About this prototype</h3><p>RAZA TECHNOLOGIES AI Business Assistant</p><p>Version: 1.1 · Black and Gold Workspace</p><p>Mode: Local template demo. No API key is used.</p></div>
+    </section>
+    <div class="notice"><strong>Prototype notice:</strong> This version runs in your browser and uses built-in templates. A connected AI model, account system and cloud-saved history have not been added yet.</div>
+  </div>
+  <footer>© 2026 RAZA TECHNOLOGIES AI · BUILD SMART. THINK BIG.</footer>
 </main>
-<footer>© 2026 RAZA TECHNOLOGIES AI · BUILD SMART. THINK BIG.</footer>
+</div>
 <script>
+let recent=[];
+function showPage(page,button){
+ ['dashboard','tools','history','settings'].forEach(p=>document.getElementById(p+'Page').classList.toggle('hidden',p!==page));
+ document.getElementById('pageTitle').textContent=({dashboard:'Dashboard',tools:'AI Tools',history:'History',settings:'Settings'})[page];
+ document.querySelectorAll('.nav').forEach(n=>n.classList.remove('active'));
+ if(button)button.classList.add('active');
+ else {let navs=document.querySelectorAll('.nav');let idx=({dashboard:0,tools:1,history:2,settings:3})[page];if(navs[idx])navs[idx].classList.add('active')}
+}
 function val(id){return document.getElementById(id).value.trim()}
-function safeText(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function show(id,text){document.getElementById(id).textContent=text}
+function show(id,text){document.getElementById(id).textContent=text;recent.unshift(text);recent=recent.slice(0,10);updateHistory()}
+function updateHistory(){document.getElementById('historyText').textContent=recent.length?recent.join('\n\n──────────\n\n'):'Your generated content will appear here after you use a tool.'}
 function makePost(){
  const b=val('postBusiness')||'Our Business',t=val('postTopic')||'Something exciting',l=val('postLang');
  if(l==='Roman Urdu')show('postOut',`${b} ki taraf se khushkhabri! 🎉\n\n${t}\n\nMazeed maloomat ke liye humse rabta karein.\n\n#${b.replace(/\s+/g,'')} #NewUpdate`);
  else if(l==='Urdu')show('postOut',`${b} کی جانب سے خوشخبری! 🎉\n\n${t}\n\nمزید معلومات کے لیے ہم سے رابطہ کریں۔`);
  else show('postOut',`✨ NEWS FROM ${b.toUpperCase()} ✨\n\n${t}\n\nDiscover more and get in touch with us today!\n\n#${b.replace(/\s+/g,'')} #Business #NewUpdate`);
 }
-function makeAd(){
- const p=val('adProduct')||'Our Product',b=val('adBenefit')||'Discover something new';
- show('adOut',`✨ DISCOVER ${p.toUpperCase()} ✨\n\n${b}\n\nMake your next choice with confidence. Contact us today to learn more about ${p}.\n\n📩 Message us for details.`);
-}
-function makeDescription(){
- const p=val('descProduct')||'Our Product',d=val('descDetails')||'A product designed with your needs in mind.';
- show('descOut',`${p}\n\n${d}\n\nLearn more about ${p} and contact our team for product information, availability and pricing.`);
-}
-async function copyOutput(id){
- const text=document.getElementById(id).textContent;
- try{await navigator.clipboard.writeText(text);alert('Copied!')}
- catch(e){alert('Please select the output text and copy it manually.')}
-}
+function makeAd(){const p=val('adProduct')||'Our Product',b=val('adBenefit')||'Discover something new';show('adOut',`✨ DISCOVER ${p.toUpperCase()} ✨\n\n${b}\n\nMake your next choice with confidence. Contact us today to learn more about ${p}.\n\n📩 Message us for details.`)}
+function makeDescription(){const p=val('descProduct')||'Our Product',d=val('descDetails')||'A product designed with your needs in mind.';show('descOut',`${p}\n\n${d}\n\nLearn more about ${p} and contact our team for product information, availability and pricing.`)}
+async function copyOutput(id){try{await navigator.clipboard.writeText(document.getElementById(id).textContent);alert('Copied!')}catch(e){alert('Please select the output text and copy it manually.')}}
+function clearHistory(){recent=[];updateHistory()}
 </script>
 </body>
 </html>
