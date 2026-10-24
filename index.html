@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -375,9 +374,64 @@ textarea { resize: vertical; min-height: 100px; }
 </div>
 
 <script>
+const SETTINGS_KEY = "raza_ai_settings";
+const HISTORY_KEY = "raza_ai_history";
+
 const pages = ["dashboard", "tools", "history", "settings"];
 let historyItems = [];
 let currentPost = "";
+
+function loadSavedSettings() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(SETTINGS_KEY) || "null");
+    if (!saved) return;
+
+    if (saved.name) {
+      document.getElementById("workspaceName").value = saved.name;
+      document.querySelector(".brand").textContent = saved.name;
+    }
+
+    if (saved.tagline) {
+      document.getElementById("tagline").value = saved.tagline;
+      document.querySelector(".brand-sub").textContent = saved.tagline;
+      document.querySelector(".footer").textContent = saved.name ? `${saved.name} · ${saved.tagline}` : `${saved.tagline}`;
+    }
+  } catch (error) {
+    console.warn("Settings could not be loaded:", error);
+  }
+}
+
+function saveCurrentSettings() {
+  const name = document.getElementById("workspaceName").value.trim();
+  const tagline = document.getElementById("tagline").value.trim();
+
+  const settings = { name, tagline };
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+
+  if (name) {
+    document.querySelector(".brand").textContent = name;
+  }
+  if (tagline) {
+    document.querySelector(".brand-sub").textContent = tagline;
+  }
+  if (name && tagline) {
+    document.querySelector(".footer").textContent = name + " · " + tagline;
+  }
+}
+
+function loadSavedHistory() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]");
+    return Array.isArray(saved) ? saved : [];
+  } catch (error) {
+    console.warn("History could not be loaded:", error);
+    return [];
+  }
+}
+
+function persistHistory() {
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(historyItems));
+}
 
 function showPage(page) {
   if (!pages.includes(page)) return;
@@ -425,7 +479,7 @@ document.getElementById("generateBtn").addEventListener("click", () => {
     ? "✨ Discover something made for you!"
     : "Discover a smarter way to move forward.";
 
-  currentPost = `${opening}\n\n${business} is here to help you with ${product}.\n\n${details ? details + "\n\n" : ""}Get in touch to learn more!\n\n#${business.replace(/[^a-zA-Z0-9]/g, "")} #Business #${platform.replace(/[^a-zA-Z0-9]/g, "")}\n\n[Demo draft — review and customize before publishing.]`;
+  currentPost = `${opening}\n\n${business} is here to help you with ${product}.\n\n${details ? details + "\n\n" : ""}Get in touch to learn more!\n\n#${business.replace(/[^a-zA-Z0-9]/g, "")} #Business #Growth`;
 
   const result = document.getElementById("postResult");
   result.textContent = currentPost;
@@ -438,7 +492,9 @@ document.getElementById("generateBtn").addEventListener("click", () => {
     platform,
     text: currentPost
   });
+
   document.getElementById("totalPosts").textContent = historyItems.length;
+  persistHistory();
   renderHistory();
 });
 
@@ -478,6 +534,9 @@ document.getElementById("clearHistory").addEventListener("click", () => {
   historyItems = [];
   currentPost = "";
   document.getElementById("totalPosts").textContent = "0";
+  document.getElementById("postResult").classList.add("hidden");
+  document.getElementById("copyBtn").classList.add("hidden");
+  localStorage.removeItem(HISTORY_KEY);
   renderHistory();
 });
 
@@ -488,12 +547,15 @@ document.getElementById("saveSettings").addEventListener("click", () => {
     alert("Please enter a workspace name.");
     return;
   }
-  document.querySelector(".brand").textContent = name;
-  document.querySelector(".brand-sub").textContent = tagline;
-  document.querySelector(".footer").textContent = name + " · " + tagline;
-  document.getElementById("settingsMessage").textContent =
-    "Profile updated for this session.";
+
+  saveCurrentSettings();
+  document.getElementById("settingsMessage").textContent = "Profile updated for this browser.";
 });
+
+historyItems = loadSavedHistory();
+loadSavedSettings();
+renderHistory();
+document.getElementById("totalPosts").textContent = historyItems.length;
 </script>
 </body>
 </html>
