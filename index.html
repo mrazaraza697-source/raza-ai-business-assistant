@@ -3,149 +3,497 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RAZA TECHNOLOGIES AI | Business Assistant</title>
 <style>
-:root{--bg:#090a0c;--panel:#111317;--panel2:#171a20;--gold:#d6b15e;--gold2:#f1d894;--text:#f6f4ee;--muted:#a5a7ae;--line:#292c33}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,Arial,sans-serif}
-button,input,textarea,select{font:inherit}
-button{cursor:pointer}
-.app{display:flex;min-height:100vh}
-.sidebar{width:245px;background:#0d0f12;border-right:1px solid var(--line);padding:24px 16px;flex-shrink:0}
-.logo{display:flex;gap:11px;align-items:center;padding:4px 7px 25px;border-bottom:1px solid var(--line)}
-.logo-mark{width:42px;height:42px;border:1px solid var(--gold);border-radius:12px;display:grid;place-items:center;color:var(--gold);font-weight:900;font-size:20px}
-.logo-title{font-weight:800;font-size:13px;line-height:1.5;letter-spacing:.5px}
-.logo-title span{color:var(--gold)}
-.logo-sub{font-size:10px;color:var(--muted);margin-top:3px}
-.nav-label{font-size:10px;color:#777b85;letter-spacing:1.5px;margin:26px 10px 10px}
-.nav{width:100%;display:flex;gap:11px;align-items:center;text-align:left;border:1px solid transparent;background:transparent;color:#b8bbc3;padding:12px;border-radius:9px;margin:3px 0}
-.nav:hover,.nav.active{background:#201c12;border-color:#554522;color:var(--gold2)}
-.side-bottom{margin-top:35px;border:1px solid var(--line);border-radius:12px;padding:13px;color:var(--muted);font-size:12px;line-height:1.7}
-.side-bottom strong{color:var(--gold)}
-main{flex:1;min-width:0}
-.topbar{height:75px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 32px;gap:15px}
-.topbar h2{font-size:17px;margin:0}
-.status{font-size:11px;color:var(--gold);border:1px solid #554522;border-radius:30px;padding:8px 11px}
-.content{max-width:1200px;margin:auto;padding:32px}
-.welcome{padding:27px;border:1px solid #4b4028;border-radius:16px;background:linear-gradient(120deg,#201b10,#111317 65%);margin-bottom:27px}
-.eyebrow{color:var(--gold);font-size:11px;letter-spacing:2px;font-weight:bold}
-.welcome h1{font-size:clamp(25px,4vw,38px);margin:12px 0}
-.welcome h1 span{color:var(--gold)}
-.welcome p{color:var(--muted);line-height:1.7;margin-bottom:0;max-width:640px}
-.section-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:27px 0 15px}
-.section-head h2{font-size:18px;margin:0}
-.section-head span{font-size:12px;color:var(--muted)}
-.tools{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;min-width:0}
-.card:hover{border-color:#68552d}
-.tool-icon{height:42px;width:42px;display:grid;place-items:center;background:#252012;border:1px solid #4a3c1e;border-radius:11px;font-size:20px}
-.card h3{font-size:16px;margin:16px 0 8px}
-.card p{color:var(--muted);font-size:12px;line-height:1.6;min-height:38px}
-label{display:block;color:#d0d1d6;font-size:12px;margin:14px 0 7px}
-input,textarea,select{width:100%;background:#0b0d10;color:var(--text);border:1px solid #343740;border-radius:8px;padding:11px;outline:none}
-input:focus,textarea:focus,select:focus{border-color:var(--gold)}
-textarea{min-height:84px;resize:vertical}
-.btn{border:1px solid var(--gold);background:var(--gold);color:#16130b;border-radius:8px;padding:11px 13px;font-size:12px;font-weight:800;width:100%;margin-top:14px}
-.btn:hover{background:var(--gold2)}
-.btn.secondary{background:transparent;color:var(--gold);margin-top:8px}
-.output{white-space:pre-wrap;overflow-wrap:anywhere;background:#0a0c0f;border:1px solid #343740;border-radius:8px;padding:12px;margin-top:13px;min-height:65px;color:#e9e7e0;font-size:12px;line-height:1.7}
-.notice{border:1px solid var(--line);background:#101216;border-radius:12px;padding:15px;margin-top:20px;color:var(--muted);font-size:12px;line-height:1.7}
-.notice strong{color:var(--gold)}
-.hidden{display:none!important}
-footer{padding:24px 32px;border-top:1px solid var(--line);font-size:11px;color:#777b85}
-@media(max-width:1000px){.tools{grid-template-columns:repeat(2,minmax(0,1fr))}.sidebar{width:205px}.content{padding:23px}}
-@media(max-width:680px){.app{display:block}.sidebar{width:100%;padding:13px;border-right:0;border-bottom:1px solid var(--line)}.logo{padding-bottom:12px}.nav-label,.side-bottom{display:none}.navs{display:flex;overflow-x:auto;gap:5px;padding-top:10px}.nav{white-space:nowrap;width:auto;margin:0;padding:10px;font-size:12px}.topbar{height:60px;padding:0 17px}.content{padding:17px}.tools{grid-template-columns:1fr}.welcome{padding:21px}.card p{min-height:0}footer{padding:20px 17px}}
+:root {
+  --bg: #0b0b0d;
+  --panel: #141416;
+  --gold: #d4af37;
+  --text: #f5f5f5;
+  --muted: #a5a5ad;
+  --border: #29292e;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Arial, Helvetica, sans-serif;
+}
+button, input, textarea, select { font: inherit; }
+button { cursor: pointer; }
+.app { display: flex; min-height: 100vh; }
+.sidebar {
+  width: 245px;
+  background: #101012;
+  border-right: 1px solid var(--border);
+  padding: 25px 16px;
+  flex-shrink: 0;
+}
+.brand {
+  font-size: 19px;
+  line-height: 1.5;
+  font-weight: 800;
+  color: var(--gold);
+  margin: 0 8px 4px;
+}
+.brand-sub {
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 2px;
+  margin: 0 8px 32px;
+}
+.nav-label {
+  font-size: 10px;
+  color: #777780;
+  letter-spacing: 2px;
+  margin: 20px 10px 10px;
+}
+.nav-btn {
+  width: 100%;
+  text-align: left;
+  padding: 13px 12px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #c4c4cb;
+  border-radius: 9px;
+  margin: 3px 0;
+}
+.nav-btn:hover, .nav-btn.active {
+  background: #292313;
+  color: var(--gold);
+  border-color: #51421a;
+}
+.sidebar-bottom {
+  margin: 35px 8px 0;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.8;
+}
+.gold-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: var(--gold);
+  border-radius: 50%;
+  margin-right: 7px;
+}
+.main { flex: 1; min-width: 0; }
+.topbar {
+  min-height: 78px;
+  padding: 18px 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid var(--border);
+  background: #101012;
+}
+.topbar h2 { margin: 0; font-size: 19px; }
+.topbar p { color: var(--muted); font-size: 12px; margin: 6px 0 0; }
+.status {
+  color: var(--gold);
+  font-size: 11px;
+  border: 1px solid #51421a;
+  padding: 8px 11px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+.content { padding: 30px; max-width: 1250px; margin: auto; }
+.welcome {
+  background: linear-gradient(120deg, #201b0e, #171719 65%);
+  border: 1px solid #51421a;
+  border-radius: 15px;
+  padding: 28px;
+  margin-bottom: 25px;
+}
+.eyebrow {
+  color: var(--gold);
+  font-size: 11px;
+  letter-spacing: 2px;
+  font-weight: bold;
+}
+h1 { font-size: clamp(25px, 4vw, 36px); margin: 13px 0; }
+.welcome p, .muted { color: var(--muted); line-height: 1.7; }
+.gold { color: var(--gold); }
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 25px;
+}
+.card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 21px;
+  min-width: 0;
+}
+.card h3 { margin: 0 0 12px; font-size: 16px; }
+.stat { font-size: 26px; font-weight: bold; color: var(--gold); }
+.stat-label { color: var(--muted); font-size: 12px; margin-top: 8px; }
+.section-title { font-size: 20px; margin: 0 0 16px; }
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.tool-icon { font-size: 25px; margin-bottom: 13px; }
+.btn {
+  background: var(--gold);
+  color: #111;
+  border: 1px solid var(--gold);
+  padding: 11px 16px;
+  border-radius: 7px;
+  font-weight: bold;
+}
+.btn:hover { background: #f0d36b; }
+.btn-outline {
+  color: var(--gold);
+  background: transparent;
+  border: 1px solid #66541d;
+  padding: 10px 14px;
+  border-radius: 7px;
+}
+.field { margin: 17px 0; }
+label { display: block; font-size: 13px; margin-bottom: 8px; color: #dedee3; }
+input, textarea, select {
+  width: 100%;
+  background: #0d0d0f;
+  border: 1px solid #35353b;
+  color: var(--text);
+  padding: 12px;
+  border-radius: 7px;
+  outline: none;
+}
+input:focus, textarea:focus, select:focus { border-color: var(--gold); }
+textarea { resize: vertical; min-height: 100px; }
+.result {
+  white-space: pre-wrap;
+  line-height: 1.8;
+  background: #0d0d0f;
+  border: 1px solid #393329;
+  border-radius: 8px;
+  padding: 17px;
+  margin-top: 18px;
+  overflow-wrap: anywhere;
+}
+.hidden { display: none !important; }
+.history-item {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+.history-item strong { color: var(--gold); }
+.footer {
+  color: #777780;
+  font-size: 11px;
+  text-align: center;
+  padding: 25px 10px;
+}
+.mobile-menu { display: none; }
+@media(max-width: 850px) {
+  .sidebar { width: 205px; }
+  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .content { padding: 20px; }
+}
+@media(max-width: 600px) {
+  .app { display: block; }
+  .sidebar {
+    display: none;
+    width: 100%;
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .sidebar.open { display: block; }
+  .mobile-menu { display: inline-block; }
+  .topbar { padding: 15px; }
+  .content { padding: 16px; }
+  .grid, .tools-grid { grid-template-columns: 1fr; }
+  .welcome { padding: 21px; }
+}
 </style>
 </head>
 <body>
 <div class="app">
-<aside class="sidebar">
-  <div class="logo">
-    <div class="logo-mark">R</div>
-    <div><div class="logo-title">RAZA <span>TECHNOLOGIES</span> AI</div><div class="logo-sub">BUILD SMART. THINK BIG.</div></div>
-  </div>
-  <div class="nav-label">WORKSPACE</div>
-  <div class="navs">
-    <button class="nav active" onclick="showPage('dashboard',this)">◈ Dashboard</button>
-    <button class="nav" onclick="showPage('tools',this)">✧ AI Tools</button>
-    <button class="nav" onclick="showPage('history',this)">◷ History</button>
-    <button class="nav" onclick="showPage('settings',this)">⚙ Settings</button>
-  </div>
-  <div class="side-bottom"><strong>DEMO VERSION</strong><br>Your business workspace is ready.<br>Generated content uses local templates.</div>
-</aside>
-<main>
-  <header class="topbar"><h2 id="pageTitle">Dashboard</h2><div class="status">● LOCAL DEMO</div></header>
-  <div class="content">
-    <section id="dashboardPage">
-      <div class="welcome">
-        <div class="eyebrow">YOUR AI BUSINESS WORKSPACE</div>
-        <h1>Build smarter.<br><span>Grow faster.</span></h1>
-        <p>Welcome to RAZA TECHNOLOGIES AI. Create social content, advertisements and product descriptions in one simple workspace.</p>
-      </div>
-      <div class="section-head"><h2>Workspace overview</h2><span>3 available tools</span></div>
-      <div class="tools">
-        <div class="card"><div class="tool-icon">✍</div><h3>Social Media Posts</h3><p>Create ready-to-use posts for your business and products.</p><button class="btn" onclick="showPage('tools',null)">Open tool →</button></div>
-        <div class="card"><div class="tool-icon">✦</div><h3>Advertisement Writer</h3><p>Draft promotional messages for your offers and services.</p><button class="btn" onclick="showPage('tools',null)">Open tool →</button></div>
-        <div class="card"><div class="tool-icon">▤</div><h3>Product Descriptions</h3><p>Prepare clear descriptions for your products and shop.</p><button class="btn" onclick="showPage('tools',null)">Open tool →</button></div>
-      </div>
-    </section>
-    <section id="toolsPage" class="hidden">
-      <div class="section-head"><h2>AI Content Tools</h2><span>Template-based demo</span></div>
-      <div class="tools">
-        <div class="card"><div class="tool-icon">✍</div><h3>Social Media Post</h3><p>Prepare a post for your audience.</p>
-          <label for="postBusiness">Business or product name</label><input id="postBusiness" placeholder="e.g. Beauty Store">
-          <label for="postTopic">Post topic</label><input id="postTopic" placeholder="e.g. New product launch">
-          <label for="postLang">Language</label><select id="postLang"><option>English</option><option>Roman Urdu</option><option>Urdu</option></select>
-          <button class="btn" onclick="makePost()">Generate Post</button><div id="postOut" class="output">Your post will appear here.</div><button class="btn secondary" onclick="copyOutput('postOut')">Copy Post</button>
-        </div>
-        <div class="card"><div class="tool-icon">✦</div><h3>Advertisement Writer</h3><p>Create a short promotional message.</p>
-          <label for="adProduct">Product or service</label><input id="adProduct" placeholder="e.g. Herbal Hair Oil">
-          <label for="adBenefit">Main benefit or offer</label><input id="adBenefit" placeholder="e.g. Special launch offer">
-          <button class="btn" onclick="makeAd()">Generate Advertisement</button><div id="adOut" class="output">Your advertisement will appear here.</div><button class="btn secondary" onclick="copyOutput('adOut')">Copy Advertisement</button>
-        </div>
-        <div class="card"><div class="tool-icon">▤</div><h3>Product Description</h3><p>Write a description for your product listing.</p>
-          <label for="descProduct">Product name</label><input id="descProduct" placeholder="Enter product name">
-          <label for="descDetails">Product details</label><textarea id="descDetails" placeholder="Features, ingredients or uses"></textarea>
-          <button class="btn" onclick="makeDescription()">Generate Description</button><div id="descOut" class="output">Your description will appear here.</div><button class="btn secondary" onclick="copyOutput('descOut')">Copy Description</button>
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">RAZA TECHNOLOGIES AI</div>
+    <div class="brand-sub">BUILD SMART. THINK BIG.</div>
+
+    <div class="nav-label">WORKSPACE</div>
+    <button class="nav-btn active" data-page="dashboard">◈ &nbsp; Dashboard</button>
+    <button class="nav-btn" data-page="tools">✦ &nbsp; AI Tools</button>
+    <button class="nav-btn" data-page="history">◷ &nbsp; History</button>
+
+    <div class="nav-label">PREFERENCES</div>
+    <button class="nav-btn" data-page="settings">⚙ &nbsp; Settings</button>
+
+    <div class="sidebar-bottom">
+      <span class="gold-dot"></span> Workspace ready<br>
+      <span>Business Assistant · Free prototype</span>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:12px">
+        <button class="btn-outline mobile-menu" id="menuBtn">☰</button>
+        <div>
+          <h2 id="pageTitle">Dashboard</h2>
+          <p>Your business, smarter every day.</p>
         </div>
       </div>
-    </section>
-    <section id="historyPage" class="hidden">
-      <div class="section-head"><h2>Recent Activity</h2><span>This browser session</span></div>
-      <div class="card"><p id="historyText">Your generated content will appear here after you use a tool.</p><button class="btn secondary" onclick="clearHistory()">Clear History</button></div>
-    </section>
-    <section id="settingsPage" class="hidden">
-      <div class="section-head"><h2>Workspace Settings</h2></div>
-      <div class="card"><h3>About this prototype</h3><p>RAZA TECHNOLOGIES AI Business Assistant</p><p>Version: 1.1 · Black and Gold Workspace</p><p>Mode: Local template demo. No API key is used.</p></div>
-    </section>
-    <div class="notice"><strong>Prototype notice:</strong> This version runs in your browser and uses built-in templates. A connected AI model, account system and cloud-saved history have not been added yet.</div>
-  </div>
-  <footer>© 2026 RAZA TECHNOLOGIES AI · BUILD SMART. THINK BIG.</footer>
-</main>
+      <div class="status">● DEMO MODE</div>
+    </header>
+
+    <div class="content">
+      <section id="dashboard" class="page">
+        <div class="welcome">
+          <div class="eyebrow">WELCOME TO YOUR WORKSPACE</div>
+          <h1>Build your business with <span class="gold">AI.</span></h1>
+          <p>Create social media content, draft advertisements and manage your work from one simple dashboard.</p>
+          <button class="btn" data-go="tools">Explore AI Tools &nbsp; →</button>
+        </div>
+
+        <div class="grid">
+          <div class="card">
+            <div class="stat" id="totalPosts">0</div>
+            <div class="stat-label">Posts created in this session</div>
+          </div>
+          <div class="card">
+            <div class="stat">04</div>
+            <div class="stat-label">Workspace sections</div>
+          </div>
+          <div class="card">
+            <div class="stat">Free</div>
+            <div class="stat-label">Prototype plan</div>
+          </div>
+        </div>
+
+        <h2 class="section-title">Quick Actions</h2>
+        <div class="tools-grid">
+          <div class="card">
+            <div class="tool-icon">✍️</div>
+            <h3>Generate a Post</h3>
+            <p class="muted">Prepare a social media post for your business.</p>
+            <button class="btn-outline" data-go="tools">Open Post Creator →</button>
+          </div>
+          <div class="card">
+            <div class="tool-icon">📢</div>
+            <h3>Advertisement Ideas</h3>
+            <p class="muted">Draft promotional copy for a product or service.</p>
+            <button class="btn-outline" data-go="tools">Explore Tools →</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="tools" class="page hidden">
+        <div class="welcome">
+          <div class="eyebrow">YOUR CONTENT WORKSPACE</div>
+          <h1>AI <span class="gold">Tools</span></h1>
+          <p>Enter your business details to create a draft. This version uses a local demo generator and does not call an AI service yet.</p>
+        </div>
+        <div class="card">
+          <h3>✦ Social Media Post Creator</h3>
+          <div class="field">
+            <label for="business">Business or brand name</label>
+            <input id="business" placeholder="e.g. RAZA TECHNOLOGIES AI">
+          </div>
+          <div class="field">
+            <label for="product">Product or service</label>
+            <input id="product" placeholder="e.g. AI business solutions">
+          </div>
+          <div class="field">
+            <label for="platform">Social media platform</label>
+            <select id="platform">
+              <option>Facebook</option>
+              <option>Instagram</option>
+              <option>WhatsApp</option>
+              <option>LinkedIn</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="tone">Post style</label>
+            <select id="tone">
+              <option>Professional</option>
+              <option>Friendly</option>
+              <option>Promotional</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="details">Extra details (optional)</label>
+            <textarea id="details" placeholder="Describe your offer, audience or message..."></textarea>
+          </div>
+          <button class="btn" id="generateBtn">Generate Post →</button>
+          <div id="postResult" class="result hidden"></div>
+          <div style="margin-top:14px">
+            <button class="btn-outline hidden" id="copyBtn">Copy Post</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="history" class="page hidden">
+        <div class="welcome">
+          <div class="eyebrow">YOUR ACTIVITY</div>
+          <h1>Post <span class="gold">History</span></h1>
+          <p>Drafts created during this browser session appear below.</p>
+        </div>
+        <div class="card">
+          <div id="historyList"><p class="muted">No posts created yet. Open AI Tools to create your first draft.</p></div>
+          <button class="btn-outline" id="clearHistory">Clear Session History</button>
+        </div>
+      </section>
+
+      <section id="settings" class="page hidden">
+        <div class="welcome">
+          <div class="eyebrow">WORKSPACE PREFERENCES</div>
+          <h1>Account <span class="gold">Settings</span></h1>
+          <p>Personalize your business assistant.</p>
+        </div>
+        <div class="card">
+          <h3>Workspace Profile</h3>
+          <div class="field">
+            <label for="workspaceName">Workspace name</label>
+            <input id="workspaceName" value="RAZA TECHNOLOGIES AI">
+          </div>
+          <div class="field">
+            <label for="tagline">Tagline</label>
+            <input id="tagline" value="BUILD SMART. THINK BIG.">
+          </div>
+          <div class="field">
+            <label>AI connection</label>
+            <input value="Not connected — demo mode" disabled>
+          </div>
+          <button class="btn" id="saveSettings">Save Profile</button>
+          <p class="muted" id="settingsMessage"></p>
+        </div>
+      </section>
+
+      <div class="footer">RAZA TECHNOLOGIES AI · BUILD SMART. THINK BIG.</div>
+    </div>
+  </main>
 </div>
+
 <script>
-let recent=[];
-function showPage(page,button){
- ['dashboard','tools','history','settings'].forEach(p=>document.getElementById(p+'Page').classList.toggle('hidden',p!==page));
- document.getElementById('pageTitle').textContent=({dashboard:'Dashboard',tools:'AI Tools',history:'History',settings:'Settings'})[page];
- document.querySelectorAll('.nav').forEach(n=>n.classList.remove('active'));
- if(button)button.classList.add('active');
- else {let navs=document.querySelectorAll('.nav');let idx=({dashboard:0,tools:1,history:2,settings:3})[page];if(navs[idx])navs[idx].classList.add('active')}
+const pages = ["dashboard", "tools", "history", "settings"];
+let historyItems = [];
+let currentPost = "";
+
+function showPage(page) {
+  if (!pages.includes(page)) return;
+  document.querySelectorAll(".page").forEach(section => {
+    section.classList.toggle("hidden", section.id !== page);
+  });
+  document.querySelectorAll(".nav-btn").forEach(button => {
+    button.classList.toggle("active", button.dataset.page === page);
+  });
+  const titles = {
+    dashboard: "Dashboard",
+    tools: "AI Tools",
+    history: "History",
+    settings: "Settings"
+  };
+  document.getElementById("pageTitle").textContent = titles[page];
+  document.getElementById("sidebar").classList.remove("open");
 }
-function val(id){return document.getElementById(id).value.trim()}
-function show(id,text){document.getElementById(id).textContent=text;recent.unshift(text);recent=recent.slice(0,10);updateHistory()}
-function updateHistory(){document.getElementById('historyText').textContent=recent.length?recent.join('\n\n──────────\n\n'):'Your generated content will appear here after you use a tool.'}
-function makePost(){
- const b=val('postBusiness')||'Our Business',t=val('postTopic')||'Something exciting',l=val('postLang');
- if(l==='Roman Urdu')show('postOut',`${b} ki taraf se khushkhabri! 🎉\n\n${t}\n\nMazeed maloomat ke liye humse rabta karein.\n\n#${b.replace(/\s+/g,'')} #NewUpdate`);
- else if(l==='Urdu')show('postOut',`${b} کی جانب سے خوشخبری! 🎉\n\n${t}\n\nمزید معلومات کے لیے ہم سے رابطہ کریں۔`);
- else show('postOut',`✨ NEWS FROM ${b.toUpperCase()} ✨\n\n${t}\n\nDiscover more and get in touch with us today!\n\n#${b.replace(/\s+/g,'')} #Business #NewUpdate`);
+
+document.querySelectorAll("[data-page]").forEach(button => {
+  button.addEventListener("click", () => showPage(button.dataset.page));
+});
+document.querySelectorAll("[data-go]").forEach(button => {
+  button.addEventListener("click", () => showPage(button.dataset.go));
+});
+document.getElementById("menuBtn").addEventListener("click", () => {
+  document.getElementById("sidebar").classList.toggle("open");
+});
+
+document.getElementById("generateBtn").addEventListener("click", () => {
+  const business = document.getElementById("business").value.trim();
+  const product = document.getElementById("product").value.trim();
+  const platform = document.getElementById("platform").value;
+  const tone = document.getElementById("tone").value;
+  const details = document.getElementById("details").value.trim();
+
+  if (!business || !product) {
+    alert("Please enter your business name and product or service.");
+    return;
+  }
+
+  const opening = tone === "Friendly"
+    ? "Good things start with the right choice!"
+    : tone === "Promotional"
+    ? "✨ Discover something made for you!"
+    : "Discover a smarter way to move forward.";
+
+  currentPost = `${opening}\n\n${business} is here to help you with ${product}.\n\n${details ? details + "\n\n" : ""}Get in touch to learn more!\n\n#${business.replace(/[^a-zA-Z0-9]/g, "")} #Business #${platform.replace(/[^a-zA-Z0-9]/g, "")}\n\n[Demo draft — review and customize before publishing.]`;
+
+  const result = document.getElementById("postResult");
+  result.textContent = currentPost;
+  result.classList.remove("hidden");
+  document.getElementById("copyBtn").classList.remove("hidden");
+
+  historyItems.unshift({
+    business,
+    product,
+    platform,
+    text: currentPost
+  });
+  document.getElementById("totalPosts").textContent = historyItems.length;
+  renderHistory();
+});
+
+document.getElementById("copyBtn").addEventListener("click", async () => {
+  if (!currentPost) return;
+  try {
+    await navigator.clipboard.writeText(currentPost);
+    alert("Post copied!");
+  } catch {
+    alert("Copy not available here. Select the post text and copy it manually.");
+  }
+});
+
+function renderHistory() {
+  const list = document.getElementById("historyList");
+  if (!historyItems.length) {
+    list.innerHTML = '<p class="muted">No posts created yet.</p>';
+    return;
+  }
+  list.replaceChildren();
+  historyItems.forEach((item, index) => {
+    const article = document.createElement("div");
+    article.className = "history-item";
+    const title = document.createElement("strong");
+    title.textContent = `${index + 1}. ${item.business} — ${item.product}`;
+    const meta = document.createElement("p");
+    meta.className = "muted";
+    meta.textContent = item.platform;
+    const body = document.createElement("p");
+    body.textContent = item.text;
+    article.append(title, meta, body);
+    list.appendChild(article);
+  });
 }
-function makeAd(){const p=val('adProduct')||'Our Product',b=val('adBenefit')||'Discover something new';show('adOut',`✨ DISCOVER ${p.toUpperCase()} ✨\n\n${b}\n\nMake your next choice with confidence. Contact us today to learn more about ${p}.\n\n📩 Message us for details.`)}
-function makeDescription(){const p=val('descProduct')||'Our Product',d=val('descDetails')||'A product designed with your needs in mind.';show('descOut',`${p}\n\n${d}\n\nLearn more about ${p} and contact our team for product information, availability and pricing.`)}
-async function copyOutput(id){try{await navigator.clipboard.writeText(document.getElementById(id).textContent);alert('Copied!')}catch(e){alert('Please select the output text and copy it manually.')}}
-function clearHistory(){recent=[];updateHistory()}
+
+document.getElementById("clearHistory").addEventListener("click", () => {
+  historyItems = [];
+  currentPost = "";
+  document.getElementById("totalPosts").textContent = "0";
+  renderHistory();
+});
+
+document.getElementById("saveSettings").addEventListener("click", () => {
+  const name = document.getElementById("workspaceName").value.trim();
+  const tagline = document.getElementById("tagline").value.trim();
+  if (!name) {
+    alert("Please enter a workspace name.");
+    return;
+  }
+  document.querySelector(".brand").textContent = name;
+  document.querySelector(".brand-sub").textContent = tagline;
+  document.querySelector(".footer").textContent = name + " · " + tagline;
+  document.getElementById("settingsMessage").textContent =
+    "Profile updated for this session.";
+});
 </script>
 </body>
 </html>
