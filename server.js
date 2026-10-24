@@ -1,10 +1,18 @@
 require('dotenv').config();
 const express = require('express');
-
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
+app.use(express.static(__dirname));
+
+app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/index.html');
+});
+
+app.get('/health', (req, res) => {
+  res.json({ ok: true, message: 'RAZA AI Business Assistant backend is running.' });
+});
 
 function buildFallbackPost({ business, product, platform, tone, details }) {
   const safeBusiness = business || 'Your Business';
@@ -54,10 +62,6 @@ async function generateWithHuggingFace({ business, product, platform, tone, deta
     text: text || buildFallbackPost({ business, product, platform, tone, details })
   };
 }
-
-app.get('/health', (req, res) => {
-  res.json({ ok: true, message: 'RAZA AI Business Assistant backend is running.' });
-});
 
 app.post('/api/generate', async (req, res) => {
   const { business, product, platform, tone, details } = req.body || {};
