@@ -376,6 +376,7 @@ textarea { resize: vertical; min-height: 100px; }
 <script>
 const SETTINGS_KEY = "raza_ai_settings";
 const HISTORY_KEY = "raza_ai_history";
+const API_URL = "http://localhost:3000/api/generate";
 
 const pages = ["dashboard", "tools", "history", "settings"];
 let historyItems = [];
@@ -408,15 +409,9 @@ function saveCurrentSettings() {
   const settings = { name, tagline };
   localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
 
-  if (name) {
-    document.querySelector(".brand").textContent = name;
-  }
-  if (tagline) {
-    document.querySelector(".brand-sub").textContent = tagline;
-  }
-  if (name && tagline) {
-    document.querySelector(".footer").textContent = name + " · " + tagline;
-  }
+  if (name) document.querySelector(".brand").textContent = name;
+  if (tagline) document.querySelector(".brand-sub").textContent = tagline;
+  if (name && tagline) document.querySelector(".footer").textContent = name + " · " + tagline;
 }
 
 function loadSavedHistory() {
@@ -461,42 +456,79 @@ document.getElementById("menuBtn").addEventListener("click", () => {
   document.getElementById("sidebar").classList.toggle("open");
 });
 
-document.getElementById("generateBtn").addEventListener("click", () => {
-  const business = document.getElementById("business").value.trim();
-  const product = document.getElementById("product").value.trim();
-  const platform = document.getElementById("platform").value;
-  const tone = document.getElementById("tone").value;
-  const details = document.getElementById("details").value.trim();
+function fallbackPostTemplate(data) {
+  const business = data.business || "Your Business";
+  const product = data.product || "your product";
+  const platform = data.platform || "Social Media";
+  const tone = data.tone || "Professional";
+  const details = data.details || "We help businesses grow with modern digital solutions.";
 
-  if (!business || !product) {
+  const opening =
+    tone === "Friendly"
+      ? "Good things start with the right choice!"
+      : tone === "Promotional"
+      ? "✨ Discover something made for you!"
+      : "Discover a smarter way to move forward.";
+
+  return `${opening}\n\n${business} is here to help you with ${product}.\n\n${details}\n\nPerfect for ${platform} growth and business visibility.\n\nGet in touch to learn more!\n\n#${business.replace(/[^a-zA-Z0-9]/g, "")} #Business #Growth`;
+}
+
+async function generatePost() {
+  const payload = {
+    business: document.getElementById("business").value.trim(),
+    product: document.getElementById("product").value.trim(),
+    platform: document.getElementById("platform").value,
+    tone: document.getElementById("tone").value,
+    details: document.getElementById("details").value.trim()
+  };
+
+  if (!payload.business || !payload.product) {
     alert("Please enter your business name and product or service.");
     return;
   }
 
-  const opening = tone === "Friendly"
-    ? "Good things start with the right choice!"
-    : tone === "Promotional"
-    ? "✨ Discover something made for you!"
-    : "Discover a smarter way to move forward.";
+  const resultBox = document.getElementById("postResult");
+  resultBox.classList.remove("hidden");
+  resultBox.textContent = "Generating your content...";
 
-  currentPost = `${opening}\n\n${business} is here to help you with ${product}.\n\n${details ? details + "\n\n" : ""}Get in touch to learn more!\n\n#${business.replace(/[^a-zA-Z0-9]/g, "")} #Business #Growth`;
+  try {
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
 
-  const result = document.getElementById("postResult");
-  result.textContent = currentPost;
-  result.classList.remove("hidden");
+    if (!response.ok) {
+      throw new Error("Backend rejected the request.");
+    }
+
+    const data = await response.json();
+    currentPost = data.text || fallbackPostTemplate(payload);
+
+    if (data.warning) {
+      console.warn(data.warning);
+    }
+  } catch (error) {
+    console.warn("API call failed, using fallback template:", error);
+    currentPost = fallbackPostTemplate(payload);
+  }
+
+  resultBox.textContent = currentPost;
   document.getElementById("copyBtn").classList.remove("hidden");
 
   historyItems.unshift({
-    business,
-    product,
-    platform,
+    business: payload.business,
+    product: payload.product,
+    platform: payload.platform,
     text: currentPost
   });
 
   document.getElementById("totalPosts").textContent = historyItems.length;
   persistHistory();
   renderHistory();
-});
+}
+
+document.getElementById("generateBtn").addEventListener("click", generatePost);
 
 document.getElementById("copyBtn").addEventListener("click", async () => {
   if (!currentPost) return;
