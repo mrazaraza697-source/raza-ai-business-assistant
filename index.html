@@ -491,6 +491,7 @@ async function generatePost() {
   resultBox.classList.remove("hidden");
   resultBox.textContent = "Generating your content...";
 
+ 
   try {
     const response = await fetch(API_URL, {
       method: "POST",
@@ -498,16 +499,28 @@ async function generatePost() {
       body: JSON.stringify(payload)
     });
 
+    const data = await response.json();
+
     if (!response.ok) {
-      throw new Error("Backend rejected the request.");
+      throw new Error(data.error || data.message || "Backend request failed.");
     }
 
-    const data = await response.json();
-    currentPost = data.text || fallbackPostTemplate(payload);
+    if (typeof data.text !== "string" || !data.text.trim()) {
+      throw new Error("AI response mein post nahi mili.");
+    }
+
+    currentPost = data.text;
 
     if (data.warning) {
       console.warn(data.warning);
     }
+  } catch (error) {
+    console.error("AI generation failed:", error);
+    resultBox.textContent = "AI post generate nahi hui: " + error.message;
+    document.getElementById("copyBtn").classList.add("hidden");
+    return;
+  }
+
   } catch (error) {
     console.warn("API call failed, using fallback template:", error);
     currentPost = fallbackPostTemplate(payload);
