@@ -1,9 +1,11 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RAZA TECHNOLOGIES AI | Business Assistant</title>
+
 <style>
 :root {
   --bg: #0b0b0d;
@@ -22,6 +24,7 @@ body {
 }
 button, input, textarea, select { font: inherit; }
 button { cursor: pointer; }
+button:disabled { opacity: .6; cursor: wait; }
 .app { display: flex; min-height: 100vh; }
 .sidebar {
   width: 245px;
@@ -156,7 +159,12 @@ h1 { font-size: clamp(25px, 4vw, 36px); margin: 13px 0; }
   border-radius: 7px;
 }
 .field { margin: 17px 0; }
-label { display: block; font-size: 13px; margin-bottom: 8px; color: #dedee3; }
+label {
+  display: block;
+  font-size: 13px;
+  margin-bottom: 8px;
+  color: #dedee3;
+}
 input, textarea, select {
   width: 100%;
   background: #0d0d0f;
@@ -213,6 +221,7 @@ textarea { resize: vertical; min-height: 100px; }
 }
 </style>
 </head>
+
 <body>
 <div class="app">
   <aside class="sidebar" id="sidebar">
@@ -229,7 +238,7 @@ textarea { resize: vertical; min-height: 100px; }
 
     <div class="sidebar-bottom">
       <span class="gold-dot"></span> Workspace ready<br>
-      <span>Business Assistant · Free prototype</span>
+      Business Assistant · Prototype
     </div>
   </aside>
 
@@ -242,7 +251,7 @@ textarea { resize: vertical; min-height: 100px; }
           <p>Your business, smarter every day.</p>
         </div>
       </div>
-      <div class="status">● DEMO MODE</div>
+      <div class="status" id="connectionStatus">● AI API READY</div>
     </header>
 
     <div class="content">
@@ -251,21 +260,21 @@ textarea { resize: vertical; min-height: 100px; }
           <div class="eyebrow">WELCOME TO YOUR WORKSPACE</div>
           <h1>Build your business with <span class="gold">AI.</span></h1>
           <p>Create social media content, draft advertisements and manage your work from one simple dashboard.</p>
-          <button class="btn" data-go="tools">Explore AI Tools &nbsp; →</button>
+          <button class="btn" data-go="tools">Explore AI Tools →</button>
         </div>
 
         <div class="grid">
           <div class="card">
             <div class="stat" id="totalPosts">0</div>
-            <div class="stat-label">Posts created in this session</div>
+            <div class="stat-label">Saved posts</div>
           </div>
           <div class="card">
             <div class="stat">04</div>
             <div class="stat-label">Workspace sections</div>
           </div>
           <div class="card">
-            <div class="stat">Free</div>
-            <div class="stat-label">Prototype plan</div>
+            <div class="stat">AI</div>
+            <div class="stat-label">Content assistant</div>
           </div>
         </div>
 
@@ -274,7 +283,7 @@ textarea { resize: vertical; min-height: 100px; }
           <div class="card">
             <div class="tool-icon">✍️</div>
             <h3>Generate a Post</h3>
-            <p class="muted">Prepare a social media post for your business.</p>
+            <p class="muted">Create original content for your business.</p>
             <button class="btn-outline" data-go="tools">Open Post Creator →</button>
           </div>
           <div class="card">
@@ -290,18 +299,22 @@ textarea { resize: vertical; min-height: 100px; }
         <div class="welcome">
           <div class="eyebrow">YOUR CONTENT WORKSPACE</div>
           <h1>AI <span class="gold">Tools</span></h1>
-          <p>Enter your business details to create a draft. This version uses a local demo generator and does not call an AI service yet.</p>
+          <p>Enter your business details to generate a social media post with your connected AI backend.</p>
         </div>
+
         <div class="card">
           <h3>✦ Social Media Post Creator</h3>
+
           <div class="field">
             <label for="business">Business or brand name</label>
             <input id="business" placeholder="e.g. RAZA TECHNOLOGIES AI">
           </div>
+
           <div class="field">
             <label for="product">Product or service</label>
             <input id="product" placeholder="e.g. AI business solutions">
           </div>
+
           <div class="field">
             <label for="platform">Social media platform</label>
             <select id="platform">
@@ -311,6 +324,7 @@ textarea { resize: vertical; min-height: 100px; }
               <option>LinkedIn</option>
             </select>
           </div>
+
           <div class="field">
             <label for="tone">Post style</label>
             <select id="tone">
@@ -319,12 +333,14 @@ textarea { resize: vertical; min-height: 100px; }
               <option>Promotional</option>
             </select>
           </div>
+
           <div class="field">
             <label for="details">Extra details (optional)</label>
             <textarea id="details" placeholder="Describe your offer, audience or message..."></textarea>
           </div>
+
           <button class="btn" id="generateBtn">Generate Post →</button>
-          <div id="postResult" class="result hidden"></div>
+          <div id="postResult" class="result hidden" aria-live="polite"></div>
           <div style="margin-top:14px">
             <button class="btn-outline hidden" id="copyBtn">Copy Post</button>
           </div>
@@ -335,11 +351,11 @@ textarea { resize: vertical; min-height: 100px; }
         <div class="welcome">
           <div class="eyebrow">YOUR ACTIVITY</div>
           <h1>Post <span class="gold">History</span></h1>
-          <p>Drafts created during this browser session appear below.</p>
+          <p>Your saved drafts appear below.</p>
         </div>
         <div class="card">
-          <div id="historyList"><p class="muted">No posts created yet. Open AI Tools to create your first draft.</p></div>
-          <button class="btn-outline" id="clearHistory">Clear Session History</button>
+          <div id="historyList"></div>
+          <button class="btn-outline" id="clearHistory">Clear History</button>
         </div>
       </section>
 
@@ -359,12 +375,8 @@ textarea { resize: vertical; min-height: 100px; }
             <label for="tagline">Tagline</label>
             <input id="tagline" value="BUILD SMART. THINK BIG.">
           </div>
-          <div class="field">
-            <label>AI connection</label>
-            <input value="Not connected — demo mode" disabled>
-          </div>
           <button class="btn" id="saveSettings">Save Profile</button>
-          <p class="muted" id="settingsMessage"></p>
+          <p class="muted" id="settingsMessage" aria-live="polite"></p>
         </div>
       </section>
 
@@ -374,31 +386,23 @@ textarea { resize: vertical; min-height: 100px; }
 </div>
 
 <script>
+"use strict";
+
+const API_URL = "/api/generate-post";
 const SETTINGS_KEY = "raza_ai_settings";
 const HISTORY_KEY = "raza_ai_history";
-const API_URL = "http://localhost:3000/api/generate";
-
 const pages = ["dashboard", "tools", "history", "settings"];
+
 let historyItems = [];
 let currentPost = "";
 
-function loadSavedSettings() {
+function safeRead(key, fallback) {
   try {
-    const saved = JSON.parse(localStorage.getItem(SETTINGS_KEY) || "null");
-    if (!saved) return;
-
-    if (saved.name) {
-      document.getElementById("workspaceName").value = saved.name;
-      document.querySelector(".brand").textContent = saved.name;
-    }
-
-    if (saved.tagline) {
-      document.getElementById("tagline").value = saved.tagline;
-      document.querySelector(".brand-sub").textContent = saved.tagline;
-      document.querySelector(".footer").textContent = saved.name ? `${saved.name} · ${saved.tagline}` : `${saved.tagline}`;
-    }
+    const value = JSON.parse(localStorage.getItem(key) || "null");
+    return value === null ? fallback : value;
   } catch (error) {
-    console.warn("Settings could not be loaded:", error);
+    console.warn("Could not read saved data:", error);
+    return fallback;
   }
 }
 
@@ -406,21 +410,35 @@ function saveCurrentSettings() {
   const name = document.getElementById("workspaceName").value.trim();
   const tagline = document.getElementById("tagline").value.trim();
 
+  if (!name) {
+    alert("Please enter a workspace name.");
+    return false;
+  }
+
   const settings = { name, tagline };
   localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
 
-  if (name) document.querySelector(".brand").textContent = name;
-  if (tagline) document.querySelector(".brand-sub").textContent = tagline;
-  if (name && tagline) document.querySelector(".footer").textContent = name + " · " + tagline;
+  document.querySelector(".brand").textContent = name;
+  document.querySelector(".brand-sub").textContent = tagline;
+  document.querySelector(".footer").textContent = name + " · " + tagline;
+
+  return true;
 }
 
-function loadSavedHistory() {
-  try {
-    const saved = JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]");
-    return Array.isArray(saved) ? saved : [];
-  } catch (error) {
-    console.warn("History could not be loaded:", error);
-    return [];
+function loadSavedSettings() {
+  const settings = safeRead(SETTINGS_KEY, {});
+  if (settings.name) {
+    document.getElementById("workspaceName").value = settings.name;
+    document.querySelector(".brand").textContent = settings.name;
+  }
+  if (settings.tagline) {
+    document.getElementById("tagline").value = settings.tagline;
+    document.querySelector(".brand-sub").textContent = settings.tagline;
+  }
+  if (settings.name || settings.tagline) {
+    document.querySelector(".footer").textContent =
+      (settings.name || "RAZA TECHNOLOGIES AI") + " · " +
+      (settings.tagline || "BUILD SMART. THINK BIG.");
   }
 }
 
@@ -428,20 +446,67 @@ function persistHistory() {
   localStorage.setItem(HISTORY_KEY, JSON.stringify(historyItems));
 }
 
+function renderHistory() {
+  const list = document.getElementById("historyList");
+  list.replaceChildren();
+
+  if (!historyItems.length) {
+    const empty = document.createElement("p");
+    empty.className = "muted";
+    empty.textContent = "No posts created yet. Open AI Tools to create your first post.";
+    list.appendChild(empty);
+    return;
+  }
+
+  historyItems.forEach((item, index) => {
+    const article = document.createElement("div");
+    article.className = "history-item";
+
+    const title = document.createElement("strong");
+    title.textContent = (index + 1) + ". " + item.business + " — " + item.product;
+
+    const meta = document.createElement("p");
+    meta.className = "muted";
+    meta.textContent = item.platform || "Social media";
+
+    const body = document.createElement("p");
+    body.textContent = item.text;
+
+    const copyButton = document.createElement("button");
+    copyButton.className = "btn-outline";
+    copyButton.textContent = "Copy This Post";
+    copyButton.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(item.text);
+        alert("Post copied!");
+      } catch (error) {
+        alert("Clipboard unavailable. Select and copy the post manually.");
+      }
+    });
+
+    article.append(title, meta, body, copyButton);
+    list.appendChild(article);
+  });
+}
+
 function showPage(page) {
   if (!pages.includes(page)) return;
+
   document.querySelectorAll(".page").forEach(section => {
     section.classList.toggle("hidden", section.id !== page);
   });
+
   document.querySelectorAll(".nav-btn").forEach(button => {
     button.classList.toggle("active", button.dataset.page === page);
   });
+
   const titles = {
     dashboard: "Dashboard",
     tools: "AI Tools",
     history: "History",
     settings: "Settings"
   };
+
   document.getElementById("pageTitle").textContent = titles[page];
   document.getElementById("sidebar").classList.remove("open");
 }
@@ -449,29 +514,14 @@ function showPage(page) {
 document.querySelectorAll("[data-page]").forEach(button => {
   button.addEventListener("click", () => showPage(button.dataset.page));
 });
+
 document.querySelectorAll("[data-go]").forEach(button => {
   button.addEventListener("click", () => showPage(button.dataset.go));
 });
+
 document.getElementById("menuBtn").addEventListener("click", () => {
   document.getElementById("sidebar").classList.toggle("open");
 });
-
-function fallbackPostTemplate(data) {
-  const business = data.business || "Your Business";
-  const product = data.product || "your product";
-  const platform = data.platform || "Social Media";
-  const tone = data.tone || "Professional";
-  const details = data.details || "We help businesses grow with modern digital solutions.";
-
-  const opening =
-    tone === "Friendly"
-      ? "Good things start with the right choice!"
-      : tone === "Promotional"
-      ? "✨ Discover something made for you!"
-      : "Discover a smarter way to move forward.";
-
-  return `${opening}\n\n${business} is here to help you with ${product}.\n\n${details}\n\nPerfect for ${platform} growth and business visibility.\n\nGet in touch to learn more!\n\n#${business.replace(/[^a-zA-Z0-9]/g, "")} #Business #Growth`;
-}
 
 async function generatePost() {
   const payload = {
@@ -488,10 +538,14 @@ async function generatePost() {
   }
 
   const resultBox = document.getElementById("postResult");
-  resultBox.classList.remove("hidden");
-  resultBox.textContent = "Generating your content...";
+  const generateBtn = document.getElementById("generateBtn");
+  const copyBtn = document.getElementById("copyBtn");
 
- 
+  resultBox.classList.remove("hidden");
+  resultBox.textContent = "Generating your AI post...";
+  generateBtn.disabled = true;
+  copyBtn.classList.add("hidden");
+
   try {
     const response = await fetch(API_URL, {
       method: "POST",
@@ -499,105 +553,82 @@ async function generatePost() {
       body: JSON.stringify(payload)
     });
 
-    const data = await response.json();
+    let data;
+    try {
+      data = await response.json();
+    } catch {
+      throw new Error("Server returned an invalid response. Check the Vercel deployment.");
+    }
 
     if (!response.ok) {
-      throw new Error(data.error || data.message || "Backend request failed.");
+      throw new Error(data.error || data.message || "AI request failed.");
     }
 
     if (typeof data.text !== "string" || !data.text.trim()) {
-      throw new Error("AI response mein post nahi mili.");
+      throw new Error(data.error || "AI response mein post nahi mili. Backend response check karein.");
     }
 
-    currentPost = data.text;
+    currentPost = data.text.trim();
+    resultBox.textContent = currentPost;
+    copyBtn.classList.remove("hidden");
 
-    if (data.warning) {
-      console.warn(data.warning);
-    }
+    historyItems.unshift({
+      business: payload.business,
+      product: payload.product,
+      platform: payload.platform,
+      text: currentPost
+    });
+
+    historyItems = historyItems.slice(0, 100);
+    persistHistory();
+    renderHistory();
+    document.getElementById("totalPosts").textContent = historyItems.length;
+
   } catch (error) {
     console.error("AI generation failed:", error);
     resultBox.textContent = "AI post generate nahi hui: " + error.message;
-    document.getElementById("copyBtn").classList.add("hidden");
-    return;
+  } finally {
+    generateBtn.disabled = false;
   }
-
-  } catch (error) {
-    console.warn("API call failed, using fallback template:", error);
-    currentPost = fallbackPostTemplate(payload);
-  }
-
-  resultBox.textContent = currentPost;
-  document.getElementById("copyBtn").classList.remove("hidden");
-
-  historyItems.unshift({
-    business: payload.business,
-    product: payload.product,
-    platform: payload.platform,
-    text: currentPost
-  });
-
-  document.getElementById("totalPosts").textContent = historyItems.length;
-  persistHistory();
-  renderHistory();
 }
 
 document.getElementById("generateBtn").addEventListener("click", generatePost);
 
 document.getElementById("copyBtn").addEventListener("click", async () => {
   if (!currentPost) return;
+
   try {
     await navigator.clipboard.writeText(currentPost);
     alert("Post copied!");
-  } catch {
-    alert("Copy not available here. Select the post text and copy it manually.");
+  } catch (error) {
+    alert("Clipboard unavailable. Select the post text and copy it manually.");
   }
 });
 
-function renderHistory() {
-  const list = document.getElementById("historyList");
-  if (!historyItems.length) {
-    list.innerHTML = '<p class="muted">No posts created yet.</p>';
-    return;
-  }
-  list.replaceChildren();
-  historyItems.forEach((item, index) => {
-    const article = document.createElement("div");
-    article.className = "history-item";
-    const title = document.createElement("strong");
-    title.textContent = `${index + 1}. ${item.business} — ${item.product}`;
-    const meta = document.createElement("p");
-    meta.className = "muted";
-    meta.textContent = item.platform;
-    const body = document.createElement("p");
-    body.textContent = item.text;
-    article.append(title, meta, body);
-    list.appendChild(article);
-  });
-}
-
 document.getElementById("clearHistory").addEventListener("click", () => {
+  if (!confirm("Are you sure you want to clear saved post history?")) return;
+
   historyItems = [];
   currentPost = "";
+  localStorage.removeItem(HISTORY_KEY);
+
   document.getElementById("totalPosts").textContent = "0";
   document.getElementById("postResult").classList.add("hidden");
   document.getElementById("copyBtn").classList.add("hidden");
-  localStorage.removeItem(HISTORY_KEY);
+
   renderHistory();
 });
 
 document.getElementById("saveSettings").addEventListener("click", () => {
-  const name = document.getElementById("workspaceName").value.trim();
-  const tagline = document.getElementById("tagline").value.trim();
-  if (!name) {
-    alert("Please enter a workspace name.");
-    return;
-  }
-
-  saveCurrentSettings();
-  document.getElementById("settingsMessage").textContent = "Profile updated for this browser.";
+  const saved = saveCurrentSettings();
+  document.getElementById("settingsMessage").textContent = saved
+    ? "Profile saved in this browser."
+    : "Please enter a workspace name.";
 });
 
-historyItems = loadSavedHistory();
+historyItems = safeRead(HISTORY_KEY, []);
+if (!Array.isArray(historyItems)) historyItems = [];
+
 loadSavedSettings();
 renderHistory();
 document.getElementById("totalPosts").textContent = historyItems.length;
