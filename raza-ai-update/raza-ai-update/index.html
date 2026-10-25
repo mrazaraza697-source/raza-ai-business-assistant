@@ -1,0 +1,748 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RAZA TECHNOLOGIES AI | Business Assistant</title>
+
+<style>
+:root {
+  --bg: #0b0b0d;
+  --panel: #141416;
+  --gold: #d4af37;
+  --text: #f5f5f5;
+  --muted: #a5a5ad;
+  --border: #29292e;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Arial, Helvetica, sans-serif;
+}
+button, input, textarea, select { font: inherit; }
+button { cursor: pointer; }
+button:disabled { opacity: .6; cursor: wait; }
+.app { display: flex; min-height: 100vh; }
+.sidebar {
+  width: 245px;
+  background: #101012;
+  border-right: 1px solid var(--border);
+  padding: 25px 16px;
+  flex-shrink: 0;
+}
+.brand {
+  font-size: 19px;
+  line-height: 1.5;
+  font-weight: 800;
+  color: var(--gold);
+  margin: 0 8px 4px;
+}
+.brand-sub {
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 2px;
+  margin: 0 8px 32px;
+}
+.nav-label {
+  font-size: 10px;
+  color: #777780;
+  letter-spacing: 2px;
+  margin: 20px 10px 10px;
+}
+.nav-btn {
+  width: 100%;
+  text-align: left;
+  padding: 13px 12px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #c4c4cb;
+  border-radius: 9px;
+  margin: 3px 0;
+}
+.nav-btn:hover, .nav-btn.active {
+  background: #292313;
+  color: var(--gold);
+  border-color: #51421a;
+}
+.sidebar-bottom {
+  margin: 35px 8px 0;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.8;
+}
+.gold-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: var(--gold);
+  border-radius: 50%;
+  margin-right: 7px;
+}
+.main { flex: 1; min-width: 0; }
+.topbar {
+  min-height: 78px;
+  padding: 18px 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid var(--border);
+  background: #101012;
+}
+.topbar h2 { margin: 0; font-size: 19px; }
+.topbar p { color: var(--muted); font-size: 12px; margin: 6px 0 0; }
+.status {
+  color: var(--gold);
+  font-size: 11px;
+  border: 1px solid #51421a;
+  padding: 8px 11px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+.content { padding: 30px; max-width: 1250px; margin: auto; }
+.welcome {
+  background: linear-gradient(120deg, #201b0e, #171719 65%);
+  border: 1px solid #51421a;
+  border-radius: 15px;
+  padding: 28px;
+  margin-bottom: 25px;
+}
+.eyebrow {
+  color: var(--gold);
+  font-size: 11px;
+  letter-spacing: 2px;
+  font-weight: bold;
+}
+h1 { font-size: clamp(25px, 4vw, 36px); margin: 13px 0; }
+.welcome p, .muted { color: var(--muted); line-height: 1.7; }
+.gold { color: var(--gold); }
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 25px;
+}
+.card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 21px;
+  min-width: 0;
+}
+.card h3 { margin: 0 0 12px; font-size: 16px; }
+.stat { font-size: 26px; font-weight: bold; color: var(--gold); }
+.stat-label { color: var(--muted); font-size: 12px; margin-top: 8px; }
+.section-title { font-size: 20px; margin: 0 0 16px; }
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.tool-icon { font-size: 25px; margin-bottom: 13px; }
+.btn {
+  background: var(--gold);
+  color: #111;
+  border: 1px solid var(--gold);
+  padding: 11px 16px;
+  border-radius: 7px;
+  font-weight: bold;
+}
+.btn:hover { background: #f0d36b; }
+.btn-outline {
+  color: var(--gold);
+  background: transparent;
+  border: 1px solid #66541d;
+  padding: 10px 14px;
+  border-radius: 7px;
+}
+.field { margin: 17px 0; }
+label {
+  display: block;
+  font-size: 13px;
+  margin-bottom: 8px;
+  color: #dedee3;
+}
+input, textarea, select {
+  width: 100%;
+  background: #0d0d0f;
+  border: 1px solid #35353b;
+  color: var(--text);
+  padding: 12px;
+  border-radius: 7px;
+  outline: none;
+}
+input:focus, textarea:focus, select:focus { border-color: var(--gold); }
+textarea { resize: vertical; min-height: 100px; }
+.result {
+  white-space: pre-wrap;
+  line-height: 1.8;
+  background: #0d0d0f;
+  border: 1px solid #393329;
+  border-radius: 8px;
+  padding: 17px;
+  margin-top: 18px;
+  overflow-wrap: anywhere;
+}
+.hidden { display: none !important; }
+.history-item {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+.history-item strong { color: var(--gold); }
+.footer {
+  color: #777780;
+  font-size: 11px;
+  text-align: center;
+  padding: 25px 10px;
+}
+.mobile-menu { display: none; }
+@media(max-width: 850px) {
+  .sidebar { width: 205px; }
+  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .content { padding: 20px; }
+}
+@media(max-width: 600px) {
+  .app { display: block; }
+  .sidebar {
+    display: none;
+    width: 100%;
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .sidebar.open { display: block; }
+  .mobile-menu { display: inline-block; }
+  .topbar { padding: 15px; }
+  .content { padding: 16px; }
+  .grid, .tools-grid { grid-template-columns: 1fr; }
+  .welcome { padding: 21px; }
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">RAZA TECHNOLOGIES AI</div>
+    <div class="brand-sub">BUILD SMART. THINK BIG.</div>
+
+    <div class="nav-label">WORKSPACE</div>
+    <button class="nav-btn active" data-page="dashboard">◈ &nbsp; Dashboard</button>
+    <button class="nav-btn" data-page="tools">✦ &nbsp; AI Tools</button>
+    <button class="nav-btn" data-page="chat">✧ &nbsp; Gemini AI Chat</button>
+    <button class="nav-btn" data-page="history">◷ &nbsp; History</button>
+
+    <div class="nav-label">PREFERENCES</div>
+    <button class="nav-btn" data-page="settings">⚙ &nbsp; Settings</button>
+
+    <div class="sidebar-bottom">
+      <span class="gold-dot"></span> Workspace ready<br>
+      Business Assistant · Prototype
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:12px">
+        <button class="btn-outline mobile-menu" id="menuBtn">☰</button>
+        <div>
+          <h2 id="pageTitle">Dashboard</h2>
+          <p>Your business, smarter every day.</p>
+        </div>
+      </div>
+      <div class="status" id="connectionStatus">● AI API READY</div>
+    </header>
+
+    <div class="content">
+      <section id="dashboard" class="page">
+        <div class="welcome">
+          <div class="eyebrow">WELCOME TO YOUR WORKSPACE</div>
+          <h1>Build your business with <span class="gold">AI.</span></h1>
+          <p>Create social media content, draft advertisements and manage your work from one simple dashboard.</p>
+          <button class="btn" data-go="tools">Explore AI Tools →</button>
+        </div>
+
+        <div class="grid">
+          <div class="card">
+            <div class="stat" id="totalPosts">0</div>
+            <div class="stat-label">Saved posts</div>
+          </div>
+          <div class="card">
+            <div class="stat">04</div>
+            <div class="stat-label">Workspace sections</div>
+          </div>
+          <div class="card">
+            <div class="stat">AI</div>
+            <div class="stat-label">Content assistant</div>
+          </div>
+        </div>
+
+        <h2 class="section-title">Quick Actions</h2>
+        <div class="tools-grid">
+          <div class="card">
+            <div class="tool-icon">✍️</div>
+            <h3>Generate a Post</h3>
+            <p class="muted">Create original content for your business.</p>
+            <button class="btn-outline" data-go="tools">Open Post Creator →</button>
+          </div>
+          <div class="card">
+            <div class="tool-icon">💬</div>
+            <h3>Gemini AI Chat</h3>
+            <p class="muted">Ask questions, brainstorm ideas and get help with everyday tasks.</p>
+            <button class="btn-outline" data-go="chat">Open AI Chat →</button>
+          </div>
+          <div class="card">
+            <div class="tool-icon">📢</div>
+            <h3>Advertisement Ideas</h3>
+            <p class="muted">Draft promotional copy for a product or service.</p>
+            <button class="btn-outline" data-go="tools">Explore Tools →</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="tools" class="page hidden">
+        <div class="welcome">
+          <div class="eyebrow">YOUR CONTENT WORKSPACE</div>
+          <h1>AI <span class="gold">Tools</span></h1>
+          <p>Enter your business details to generate a social media post with your connected AI backend.</p>
+        </div>
+
+        <div class="card">
+          <h3>✦ Social Media Post Creator</h3>
+
+          <div class="field">
+            <label for="business">Business or brand name</label>
+            <input id="business" placeholder="e.g. RAZA TECHNOLOGIES AI">
+          </div>
+
+          <div class="field">
+            <label for="product">Product or service</label>
+            <input id="product" placeholder="e.g. AI business solutions">
+          </div>
+
+          <div class="field">
+            <label for="platform">Social media platform</label>
+            <select id="platform">
+              <option>Facebook</option>
+              <option>Instagram</option>
+              <option>WhatsApp</option>
+              <option>LinkedIn</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="tone">Post style</label>
+            <select id="tone">
+              <option>Professional</option>
+              <option>Friendly</option>
+              <option>Promotional</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="details">Extra details (optional)</label>
+            <textarea id="details" placeholder="Describe your offer, audience or message..."></textarea>
+          </div>
+
+          <button class="btn" id="generateBtn">Generate Post →</button>
+          <div id="postResult" class="result hidden" aria-live="polite"></div>
+          <div style="margin-top:14px">
+            <button class="btn-outline hidden" id="copyBtn">Copy Post</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="chat" class="page hidden">
+        <div class="welcome">
+          <div class="eyebrow">GEMINI-POWERED ASSISTANT</div>
+          <h1>Ask <span class="gold">Gemini AI.</span></h1>
+          <p>Ask a question, get ideas, or request help with your business. Your API key stays on the server.</p>
+        </div>
+        <div class="card">
+          <div id="chatMessages" aria-live="polite" style="display:flex;flex-direction:column;gap:12px;margin-bottom:18px">
+            <div class="result" style="margin-top:0">Hello! I am your AI assistant. What would you like help with?</div>
+          </div>
+          <form id="chatForm">
+            <div class="field">
+              <label for="chatInput">Your message</label>
+              <textarea id="chatInput" rows="3" placeholder="Ask Gemini anything..." required></textarea>
+            </div>
+            <button class="btn" id="sendChatBtn" type="submit">Send Message →</button>
+            <button class="btn-outline" id="clearChatBtn" type="button">Clear Chat</button>
+          </form>
+          <p class="muted" style="font-size:12px">Note: Gemini's free-tier daily quota may temporarily run out. If that happens, wait for the quota reset; no paid upgrade is required for this prototype.</p>
+        </div>
+      </section>
+
+      <section id="history" class="page hidden">
+        <div class="welcome">
+          <div class="eyebrow">YOUR ACTIVITY</div>
+          <h1>Post <span class="gold">History</span></h1>
+          <p>Your saved drafts appear below.</p>
+        </div>
+        <div class="card">
+          <div id="historyList"></div>
+          <button class="btn-outline" id="clearHistory">Clear History</button>
+        </div>
+      </section>
+
+      <section id="settings" class="page hidden">
+        <div class="welcome">
+          <div class="eyebrow">WORKSPACE PREFERENCES</div>
+          <h1>Account <span class="gold">Settings</span></h1>
+          <p>Personalize your business assistant.</p>
+        </div>
+        <div class="card">
+          <h3>Workspace Profile</h3>
+          <div class="field">
+            <label for="workspaceName">Workspace name</label>
+            <input id="workspaceName" value="RAZA TECHNOLOGIES AI">
+          </div>
+          <div class="field">
+            <label for="tagline">Tagline</label>
+            <input id="tagline" value="BUILD SMART. THINK BIG.">
+          </div>
+          <button class="btn" id="saveSettings">Save Profile</button>
+          <p class="muted" id="settingsMessage" aria-live="polite"></p>
+        </div>
+      </section>
+
+      <div class="footer">RAZA TECHNOLOGIES AI · BUILD SMART. THINK BIG.</div>
+    </div>
+  </main>
+</div>
+
+<script>
+"use strict";
+
+const API_URL = "/api/generate-post";
+const CHAT_API_URL = "/api/chat";
+const SETTINGS_KEY = "raza_ai_settings";
+const HISTORY_KEY = "raza_ai_history";
+const pages = ["dashboard", "tools", "chat", "history", "settings"];
+
+let historyItems = [];
+let currentPost = "";
+
+function safeRead(key, fallback) {
+  try {
+    const value = JSON.parse(localStorage.getItem(key) || "null");
+    return value === null ? fallback : value;
+  } catch (error) {
+    console.warn("Could not read saved data:", error);
+    return fallback;
+  }
+}
+
+function saveCurrentSettings() {
+  const name = document.getElementById("workspaceName").value.trim();
+  const tagline = document.getElementById("tagline").value.trim();
+
+  if (!name) {
+    alert("Please enter a workspace name.");
+    return false;
+  }
+
+  const settings = { name, tagline };
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+
+  document.querySelector(".brand").textContent = name;
+  document.querySelector(".brand-sub").textContent = tagline;
+  document.querySelector(".footer").textContent = name + " · " + tagline;
+
+  return true;
+}
+
+function loadSavedSettings() {
+  const settings = safeRead(SETTINGS_KEY, {});
+  if (settings.name) {
+    document.getElementById("workspaceName").value = settings.name;
+    document.querySelector(".brand").textContent = settings.name;
+  }
+  if (settings.tagline) {
+    document.getElementById("tagline").value = settings.tagline;
+    document.querySelector(".brand-sub").textContent = settings.tagline;
+  }
+  if (settings.name || settings.tagline) {
+    document.querySelector(".footer").textContent =
+      (settings.name || "RAZA TECHNOLOGIES AI") + " · " +
+      (settings.tagline || "BUILD SMART. THINK BIG.");
+  }
+}
+
+function persistHistory() {
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(historyItems));
+}
+
+function renderHistory() {
+  const list = document.getElementById("historyList");
+  list.replaceChildren();
+
+  if (!historyItems.length) {
+    const empty = document.createElement("p");
+    empty.className = "muted";
+    empty.textContent = "No posts created yet. Open AI Tools to create your first post.";
+    list.appendChild(empty);
+    return;
+  }
+
+  historyItems.forEach((item, index) => {
+    const article = document.createElement("div");
+    article.className = "history-item";
+
+    const title = document.createElement("strong");
+    title.textContent = (index + 1) + ". " + item.business + " — " + item.product;
+
+    const meta = document.createElement("p");
+    meta.className = "muted";
+    meta.textContent = item.platform || "Social media";
+
+    const body = document.createElement("p");
+    body.textContent = item.text;
+
+    const copyButton = document.createElement("button");
+    copyButton.className = "btn-outline";
+    copyButton.textContent = "Copy This Post";
+    copyButton.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(item.text);
+        alert("Post copied!");
+      } catch (error) {
+        alert("Clipboard unavailable. Select and copy the post manually.");
+      }
+    });
+
+    article.append(title, meta, body, copyButton);
+    list.appendChild(article);
+  });
+}
+
+function showPage(page) {
+  if (!pages.includes(page)) return;
+
+  document.querySelectorAll(".page").forEach(section => {
+    section.classList.toggle("hidden", section.id !== page);
+  });
+
+  document.querySelectorAll(".nav-btn").forEach(button => {
+    button.classList.toggle("active", button.dataset.page === page);
+  });
+
+  const titles = {
+    dashboard: "Dashboard",
+    tools: "AI Tools",
+    chat: "Gemini AI Chat",
+    history: "History",
+    settings: "Settings"
+  };
+
+  document.getElementById("pageTitle").textContent = titles[page];
+  document.getElementById("sidebar").classList.remove("open");
+}
+
+document.querySelectorAll("[data-page]").forEach(button => {
+  button.addEventListener("click", () => showPage(button.dataset.page));
+});
+
+document.querySelectorAll("[data-go]").forEach(button => {
+  button.addEventListener("click", () => showPage(button.dataset.go));
+});
+
+document.getElementById("menuBtn").addEventListener("click", () => {
+  document.getElementById("sidebar").classList.toggle("open");
+});
+
+async function generatePost() {
+  const payload = {
+    business: document.getElementById("business").value.trim(),
+    product: document.getElementById("product").value.trim(),
+    platform: document.getElementById("platform").value,
+    tone: document.getElementById("tone").value,
+    details: document.getElementById("details").value.trim()
+  };
+
+  if (!payload.business || !payload.product) {
+    alert("Please enter your business name and product or service.");
+    return;
+  }
+
+  const resultBox = document.getElementById("postResult");
+  const generateBtn = document.getElementById("generateBtn");
+  const copyBtn = document.getElementById("copyBtn");
+
+  resultBox.classList.remove("hidden");
+  resultBox.textContent = "Generating your AI post...";
+  generateBtn.disabled = true;
+  copyBtn.classList.add("hidden");
+
+  try {
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    let data;
+    try {
+      data = await response.json();
+    } catch {
+      throw new Error("Server returned an invalid response. Check the Vercel deployment.");
+    }
+
+    if (!response.ok) {
+      throw new Error(data.error || data.message || "AI request failed.");
+    }
+
+    if (typeof data.text !== "string" || !data.text.trim()) {
+      throw new Error(data.error || "AI response mein post nahi mili. Backend response check karein.");
+    }
+
+    currentPost = data.text.trim();
+    resultBox.textContent = currentPost;
+    copyBtn.classList.remove("hidden");
+
+    historyItems.unshift({
+      business: payload.business,
+      product: payload.product,
+      platform: payload.platform,
+      text: currentPost
+    });
+
+    historyItems = historyItems.slice(0, 100);
+    persistHistory();
+    renderHistory();
+    document.getElementById("totalPosts").textContent = historyItems.length;
+
+  } catch (error) {
+    console.error("AI generation failed:", error);
+    resultBox.textContent = "AI post generate nahi hui: " + error.message;
+  } finally {
+    generateBtn.disabled = false;
+  }
+}
+
+
+const chatForm = document.getElementById("chatForm");
+const chatInput = document.getElementById("chatInput");
+const chatMessages = document.getElementById("chatMessages");
+const sendChatBtn = document.getElementById("sendChatBtn");
+let chatHistory = [];
+
+function addChatMessage(role, text) {
+  const bubble = document.createElement("div");
+  bubble.className = "result";
+  bubble.style.marginTop = "0";
+  bubble.style.borderColor = role === "user" ? "#66541d" : "#393329";
+  const label = document.createElement("strong");
+  label.style.color = "var(--gold)";
+  label.textContent = role === "user" ? "You" : "Gemini AI";
+  const body = document.createElement("div");
+  body.style.marginTop = "7px";
+  body.textContent = text;
+  bubble.append(label, body);
+  chatMessages.appendChild(bubble);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+  return bubble;
+}
+
+chatForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const message = chatInput.value.trim();
+  if (!message) return;
+
+  addChatMessage("user", message);
+  chatHistory.push({ role: "user", text: message });
+  chatInput.value = "";
+  sendChatBtn.disabled = true;
+  const thinkingBubble = addChatMessage("assistant", "Gemini is thinking...");
+
+  try {
+    const response = await fetch(CHAT_API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message, history: chatHistory.slice(-12, -1) })
+    });
+    let data;
+    try {
+      data = await response.json();
+    } catch {
+      throw new Error("Server ne valid response nahi diya. Vercel deployment check karein.");
+    }
+    if (!response.ok) throw new Error(data.error || "AI request failed.");
+    if (typeof data.text !== "string" || !data.text.trim()) throw new Error("Gemini ka jawab khali tha.");
+    thinkingBubble.replaceChildren();
+    const label = document.createElement("strong");
+    label.style.color = "var(--gold)";
+    label.textContent = "Gemini AI";
+    const body = document.createElement("div");
+    body.style.marginTop = "7px";
+    body.textContent = data.text.trim();
+    thinkingBubble.append(label, body);
+    chatHistory.push({ role: "assistant", text: data.text.trim() });
+  } catch (error) {
+    thinkingBubble.replaceChildren();
+    const label = document.createElement("strong");
+    label.style.color = "var(--gold)";
+    label.textContent = "Chat error";
+    const body = document.createElement("div");
+    body.style.marginTop = "7px";
+    body.textContent = error.message;
+    thinkingBubble.append(label, body);
+  } finally {
+    sendChatBtn.disabled = false;
+    chatInput.focus();
+  }
+});
+
+document.getElementById("clearChatBtn").addEventListener("click", () => {
+  chatHistory = [];
+  chatMessages.replaceChildren();
+  addChatMessage("assistant", "Chat cleared. What would you like to ask?");
+});
+
+
+document.getElementById("generateBtn").addEventListener("click", generatePost);
+
+document.getElementById("copyBtn").addEventListener("click", async () => {
+  if (!currentPost) return;
+
+  try {
+    await navigator.clipboard.writeText(currentPost);
+    alert("Post copied!");
+  } catch (error) {
+    alert("Clipboard unavailable. Select the post text and copy it manually.");
+  }
+});
+
+document.getElementById("clearHistory").addEventListener("click", () => {
+  if (!confirm("Are you sure you want to clear saved post history?")) return;
+
+  historyItems = [];
+  currentPost = "";
+  localStorage.removeItem(HISTORY_KEY);
+
+  document.getElementById("totalPosts").textContent = "0";
+  document.getElementById("postResult").classList.add("hidden");
+  document.getElementById("copyBtn").classList.add("hidden");
+
+  renderHistory();
+});
+
+document.getElementById("saveSettings").addEventListener("click", () => {
+  const saved = saveCurrentSettings();
+  document.getElementById("settingsMessage").textContent = saved
+    ? "Profile saved in this browser."
+    : "Please enter a workspace name.";
+});
+
+historyItems = safeRead(HISTORY_KEY, []);
+if (!Array.isArray(historyItems)) historyItems = [];
+
+loadSavedSettings();
+renderHistory();
+document.getElementById("totalPosts").textContent = historyItems.length;
+</script>
+</body>
+</html>
