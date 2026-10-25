@@ -12,9 +12,12 @@ export default async function handler(req, res) {
   if (!apiKey) {
     return res.status(500).json({
       success: false,
-      error: "GEMINI_API_KEY Vercel mein set nahi hai."
+      error: "GEMINI_API_KEY Vercel environment mein set nahi hai."
     });
   }
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 20000);
 
   try {
     const { business, product, platform, tone, details } =
@@ -35,25 +38,26 @@ export default async function handler(req, res) {
     const prompt = `Write one ready-to-publish social media post.
 
 Business: ${business.trim()}
-Product/service: ${product.trim()}
+Product or service: ${product.trim()}
 Platform: ${platform || "Facebook"}
 Tone: ${tone || "Professional"}
-Instructions: ${details || "Keep it concise and engaging."}
+Additional instructions: ${details || "Keep it concise and engaging."}
 
 Rules:
-- Follow the user's instructions.
-- Do not invent features, prices, or guarantees.
+- Follow the user's instructions carefully.
 - Return only the finished post.
-- Keep it concise unless a different length is requested.`;
+- Do not invent product features, prices, or guarantees.
+- Keep the post concise unless another length is requested.`;
 
     const response = await fetch(
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "x-goog-api-key": apiKey
         },
-        signal: AbortSignal.timeout(20000),
+        signal: controller.signal,
         body: JSON.stringify({
           contents: [
             {
@@ -76,9 +80,8 @@ Rules:
 
       return res.status(502).json({
         success: false,
-        error:
-          data.error?.message ||
-          "Gemini API request failed."
+        error: data.error?.message ||
+          `Gemini API request failed (${response.status}).`
       });
     }
 
@@ -88,9 +91,11 @@ Rules:
       .trim();
 
     if (!text) {
+      console.error("Gemini returned no text:", data);
+
       return res.status(502).json({
         success: false,
-        error: "Gemini ne koi post return nahi ki."
+        error: "Gemini ne post return nahi ki. Dobara try karein."
       });
     }
 
@@ -104,14 +109,17 @@ Rules:
     console.error("Generate post error:", error);
 
     const timedOut =
-      error.name === "TimeoutError" ||
-      error.name === "AbortError";
+      error.name === "AbortError" ||
+      error.name === "TimeoutError";
 
     return res.status(timedOut ? 504 : 500).json({
       success: false,
       error: timedOut
-        ? "Gemini response mein 20 seconds se zyada lag rahe hain. Dobara try karein."
-        : "AI post generate nahi hui. Dobara koshish karein."
+        ? "Gemini ko jawab dene mein 20 seconds se zyada lage. Dobara try karein."
+        : "Backend request fail hui. Vercel Function Logs check karein."
     });
+
+  } finally {
+    clearTimeout(timeout);
   }
 }
