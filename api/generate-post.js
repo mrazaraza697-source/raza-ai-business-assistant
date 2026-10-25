@@ -3,7 +3,7 @@ export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({
       success: false,
-      message: "Method not allowed"
+      error: "Method not allowed"
     });
   }
 
@@ -12,24 +12,39 @@ export default async function handler(req, res) {
   if (!apiKey) {
     return res.status(500).json({
       success: false,
-      message: "Gemini API key is not configured in Vercel."
+      error: "GEMINI_API_KEY Vercel environment mein set nahi hai."
     });
   }
 
   try {
-    const body = req.body || {};
-    const prompt =
-      body.prompt ||
-      body.topic ||
-      body.description ||
-      body.name;
+    const { business, product, platform, tone, details } =
+      req.body || {};
 
-    if (!prompt || typeof prompt !== "string") {
+    if (!business?.trim() || !product?.trim()) {
       return res.status(400).json({
         success: false,
-        message: "Please enter a topic for your post."
+        error: "Business name aur product zaroori hain."
       });
     }
+
+    const prompt = `
+You are a professional AI marketing copywriter.
+
+Create an original, ready-to-publish social media post.
+
+Business name: ${business}
+Product or service: ${product}
+Platform: ${platform || "Facebook"}
+Tone: ${tone || "Professional"}
+Additional instructions: ${details || "No extra instructions."}
+
+IMPORTANT RULES:
+- Follow the additional instructions carefully.
+- Do not copy the instructions themselves into the post.
+- Do not invent product features, prices, guarantees, or claims.
+- Respect requested length, phrases, language, and hashtag preferences.
+- Return only the finished post, without explanations or labels.
+`;
 
     const response = await fetch(
       "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent",
@@ -40,14 +55,16 @@ export default async function handler(req, res) {
           "x-goog-api-key": apiKey
         },
         body: JSON.stringify({
-          systemInstruction: {
-            parts: [{
-              text: "You are RAZA TECHNOLOGIES AI Business Assistant. Generate original, professional social media content based on the user's request. Never repeat the prompt as the post. Include a strong call to action and relevant hashtags. Return only the finished post."
-            }]
-          },
-          contents: [{
-            parts: [{ text: prompt }]
-          }]
+          contents: [
+            {
+              role: "user",
+              parts: [{ text: prompt }]
+            }
+          ],
+          generationConfig: {
+            temperature: 0.7,
+            maxOutputTokens: 700
+          }
         })
       }
     );
@@ -55,38 +72,40 @@ export default async function handler(req, res) {
     const data = await response.json();
 
     if (!response.ok) {
-      console.error("Gemini API error:", data.error?.message);
-
-      return res.status(502).json({
-        success: false,
-        message: "Gemini could not generate the post. Check API access and model availability."
-      });
+      console.error("Gemini API error:", data);
+      return res.status(response.status >= 500 ? 502 : response.status)
+        .json({
+          success: false,
+          error:
+            data.error?.message ||
+            "Gemini API request failed."
+        });
     }
 
-    const post = data.candidates?.[0]?.content?.parts
+    const text = data.candidates?.[0]?.content?.parts
       ?.map(part => part.text || "")
       .join("")
       .trim();
 
-    if (!post) {
+    if (!text) {
       return res.status(502).json({
         success: false,
-        message: "Gemini returned an empty response."
+        error: "Gemini ne koi text return nahi kiya."
       });
     }
 
     return res.status(200).json({
       success: true,
       demo: false,
-      post
+      text
     });
 
   } catch (error) {
-    console.error("Generate post error:", error.message);
+    console.error("Generate post error:", error);
 
     return res.status(500).json({
       success: false,
-      message: "Could not generate post. Please try again."
+      error: "AI post generate nahi hui. Dobara koshish karein."
     });
   }
 }
