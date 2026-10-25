@@ -12,7 +12,7 @@ export default async function handler(req, res) {
   if (!apiKey) {
     return res.status(500).json({
       success: false,
-      error: "GEMINI_API_KEY Vercel environment mein set nahi hai."
+      error: "GEMINI_API_KEY Vercel mein set nahi hai."
     });
   }
 
@@ -20,31 +20,31 @@ export default async function handler(req, res) {
     const { business, product, platform, tone, details } =
       req.body || {};
 
-    if (!business?.trim() || !product?.trim()) {
+    if (
+      typeof business !== "string" ||
+      !business.trim() ||
+      typeof product !== "string" ||
+      !product.trim()
+    ) {
       return res.status(400).json({
         success: false,
         error: "Business name aur product zaroori hain."
       });
     }
 
-    const prompt = `
-You are a professional AI marketing copywriter.
+    const prompt = `Write one ready-to-publish social media post.
 
-Create an original, ready-to-publish social media post.
-
-Business name: ${business}
-Product or service: ${product}
+Business: ${business.trim()}
+Product/service: ${product.trim()}
 Platform: ${platform || "Facebook"}
 Tone: ${tone || "Professional"}
-Additional instructions: ${details || "No extra instructions."}
+Instructions: ${details || "Keep it concise and engaging."}
 
-IMPORTANT RULES:
-- Follow the additional instructions carefully.
-- Do not copy the instructions themselves into the post.
-- Do not invent product features, prices, guarantees, or claims.
-- Respect requested length, phrases, language, and hashtag preferences.
-- Return only the finished post, without explanations or labels.
-`;
+Rules:
+- Follow the user's instructions.
+- Do not invent features, prices, or guarantees.
+- Return only the finished post.
+- Keep it concise unless a different length is requested.`;
 
     const response = await fetch(
       "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent",
@@ -54,6 +54,7 @@ IMPORTANT RULES:
           "Content-Type": "application/json",
           "x-goog-api-key": apiKey
         },
+        signal: AbortSignal.timeout(20000),
         body: JSON.stringify({
           contents: [
             {
@@ -62,8 +63,8 @@ IMPORTANT RULES:
             }
           ],
           generationConfig: {
-            temperature: 0.7,
-            maxOutputTokens: 700
+            temperature: 0.5,
+            maxOutputTokens: 300
           }
         })
       }
@@ -73,13 +74,13 @@ IMPORTANT RULES:
 
     if (!response.ok) {
       console.error("Gemini API error:", data);
-      return res.status(response.status >= 500 ? 502 : response.status)
-        .json({
-          success: false,
-          error:
-            data.error?.message ||
-            "Gemini API request failed."
-        });
+
+      return res.status(502).json({
+        success: false,
+        error:
+          data.error?.message ||
+          "Gemini API request failed."
+      });
     }
 
     const text = data.candidates?.[0]?.content?.parts
@@ -90,7 +91,7 @@ IMPORTANT RULES:
     if (!text) {
       return res.status(502).json({
         success: false,
-        error: "Gemini ne koi text return nahi kiya."
+        error: "Gemini ne koi post return nahi ki."
       });
     }
 
@@ -103,9 +104,15 @@ IMPORTANT RULES:
   } catch (error) {
     console.error("Generate post error:", error);
 
-    return res.status(500).json({
+    const timedOut =
+      error.name === "TimeoutError" ||
+      error.name === "AbortError";
+
+    return res.status(timedOut ? 504 : 500).json({
       success: false,
-      error: "AI post generate nahi hui. Dobara koshish karein."
+      error: timedOut
+        ? "Gemini response mein 20 seconds se zyada lag rahe hain. Dobara try karein."
+        : "AI post generate nahi hui. Dobara koshish karein."
     });
   }
 }
