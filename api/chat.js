@@ -28,11 +28,14 @@ export default async function handler(req, res) {
       for (const item of history.slice(-10)) {
         if (!item) continue;
 
-        const role = item.role === "assistant" || item.role === "model"
-          ? "model"
-          : "user";
+        const role =
+          item.role === "assistant" || item.role === "model"
+            ? "model"
+            : "user";
 
-        const content = String(item.content || item.text || "").trim();
+        const content = String(
+          item.content || item.text || ""
+        ).trim();
 
         if (content) {
           contents.push({
@@ -63,14 +66,16 @@ export default async function handler(req, res) {
     const data = await response.json();
 
     if (!response.ok) {
+      console.error("Gemini API error:", data);
       return res.status(response.status).json({
         error: data.error?.message || "Gemini API request failed."
       });
     }
 
-    const reply = data.candidates?.[0]?.content?.parts
-      ?.map(part => part.text || "")
-      .join("") || "";
+    const reply =
+      data.candidates?.[0]?.content?.parts
+        ?.map(part => part.text || "")
+        .join("") || "";
 
     return res.status(200).json({
       reply: reply || "Gemini se jawab nahi mila."
@@ -79,7 +84,7 @@ export default async function handler(req, res) {
     console.error("Gemini Chat error:", error);
 
     return res.status(500).json({
-      error: "Server error while contacting Gemini."
+      error: error.message || "Server error while contacting Gemini."
     });
   }
 }
