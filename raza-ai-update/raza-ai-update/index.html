@@ -670,17 +670,14 @@ chatForm.addEventListener("submit", async (event) => {
       throw new Error("Server ne valid response nahi diya. Vercel deployment check karein.");
     }
     if (!response.ok) throw new Error(data.error || "AI request failed.");
-    if (typeof data.text !== "string" || !data.text.trim()) throw new Error("Gemini ka jawab khali tha.");
-    thinkingBubble.replaceChildren();
+if (typeof data.reply !== "string" || !data.reply.trim()) throw new Error("Gemini ka jawab khali tha.");    thinkingBubble.replaceChildren();
     const label = document.createElement("strong");
     label.style.color = "var(--gold)";
     label.textContent = "Gemini AI";
     const body = document.createElement("div");
     body.style.marginTop = "7px";
-    body.textContent = data.text.trim();
-    thinkingBubble.append(label, body);
-    chatHistory.push({ role: "assistant", text: data.text.trim() });
-  } catch (error) {
+body.textContent = data.reply.trim();    thinkingBubble.append(label, body);
+chatHistory.push({ role: "assistant", text: data.reply.trim() });  } catch (error) {
     thinkingBubble.replaceChildren();
     const label = document.createElement("strong");
     label.style.color = "var(--gold)";
