@@ -17,8 +17,7 @@
 }
 * { box-sizing: border-box; }
 body {
-  margin: 0;
-  background: var(--bg);
+  margin: 0;   background: var(--bg);
   color: var(--text);
   font-family: Arial, Helvetica, sans-serif;
 }
@@ -231,6 +230,7 @@ textarea { resize: vertical; min-height: 100px; }
     <div class="nav-label">WORKSPACE</div>
     <button class="nav-btn active" data-page="dashboard">◈ &nbsp; Dashboard</button>
     <button class="nav-btn" data-page="tools">✦ &nbsp; AI Tools</button>
+    <button class="nav-btn" data-page="chat">✧ &nbsp; Gemini AI Chat</button>
     <button class="nav-btn" data-page="history">◷ &nbsp; History</button>
 
     <div class="nav-label">PREFERENCES</div>
@@ -285,6 +285,12 @@ textarea { resize: vertical; min-height: 100px; }
             <h3>Generate a Post</h3>
             <p class="muted">Create original content for your business.</p>
             <button class="btn-outline" data-go="tools">Open Post Creator →</button>
+          </div>
+          <div class="card">
+            <div class="tool-icon">💬</div>
+            <h3>Gemini AI Chat</h3>
+            <p class="muted">Ask questions, brainstorm ideas and get help with everyday tasks.</p>
+            <button class="btn-outline" data-go="chat">Open AI Chat →</button>
           </div>
           <div class="card">
             <div class="tool-icon">📢</div>
@@ -347,6 +353,28 @@ textarea { resize: vertical; min-height: 100px; }
         </div>
       </section>
 
+      <section id="chat" class="page hidden">
+        <div class="welcome">
+          <div class="eyebrow">GEMINI-POWERED ASSISTANT</div>
+          <h1>Ask <span class="gold">Gemini AI.</span></h1>
+          <p>Ask a question, get ideas, or request help with your business. Your API key stays on the server.</p>
+        </div>
+        <div class="card">
+          <div id="chatMessages" aria-live="polite" style="display:flex;flex-direction:column;gap:12px;margin-bottom:18px">
+            <div class="result" style="margin-top:0">Hello! I am your AI assistant. What would you like help with?</div>
+          </div>
+          <form id="chatForm">
+            <div class="field">
+              <label for="chatInput">Your message</label>
+              <textarea id="chatInput" rows="3" placeholder="Ask Gemini anything..." required></textarea>
+            </div>
+            <button class="btn" id="sendChatBtn" type="submit">Send Message →</button>
+            <button class="btn-outline" id="clearChatBtn" type="button">Clear Chat</button>
+          </form>
+          <p class="muted" style="font-size:12px">Note: Gemini's free-tier daily quota may temporarily run out. If that happens, wait for the quota reset; no paid upgrade is required for this prototype.</p>
+        </div>
+      </section>
+
       <section id="history" class="page hidden">
         <div class="welcome">
           <div class="eyebrow">YOUR ACTIVITY</div>
@@ -389,9 +417,10 @@ textarea { resize: vertical; min-height: 100px; }
 "use strict";
 
 const API_URL = "/api/generate-post";
+const CHAT_API_URL = "/api/chat";
 const SETTINGS_KEY = "raza_ai_settings";
 const HISTORY_KEY = "raza_ai_history";
-const pages = ["dashboard", "tools", "history", "settings"];
+const pages = ["dashboard", "tools", "chat", "history", "settings"];
 
 let historyItems = [];
 let currentPost = "";
@@ -503,6 +532,7 @@ function showPage(page) {
   const titles = {
     dashboard: "Dashboard",
     tools: "AI Tools",
+    chat: "Gemini AI Chat",
     history: "History",
     settings: "Settings"
   };
@@ -592,6 +622,83 @@ async function generatePost() {
   }
 }
 
+
+const chatForm = document.getElementById("chatForm");
+const chatInput = document.getElementById("chatInput");
+const chatMessages = document.getElementById("chatMessages");
+const sendChatBtn = document.getElementById("sendChatBtn");
+let chatHistory = [];
+
+function addChatMessage(role, text) {
+  const bubble = document.createElement("div");
+  bubble.className = "result";
+  bubble.style.marginTop = "0";
+  bubble.style.borderColor = role === "user" ? "#66541d" : "#393329";
+  const label = document.createElement("strong");
+  label.style.color = "var(--gold)";
+  label.textContent = role === "user" ? "You" : "Gemini AI";
+  const body = document.createElement("div");
+  body.style.marginTop = "7px";
+  body.textContent = text;
+  bubble.append(label, body);
+  chatMessages.appendChild(bubble);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+  return bubble;
+}
+
+chatForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const message = chatInput.value.trim();
+  if (!message) return;
+
+  addChatMessage("user", message);
+  chatHistory.push({ role: "user", text: message });
+  chatInput.value = "";
+  sendChatBtn.disabled = true;
+  const thinkingBubble = addChatMessage("assistant", "Gemini is thinking...");
+
+  try {
+    const response = await fetch(CHAT_API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message, history: chatHistory.slice(-12, -1) })
+    });
+    let data;
+    try {
+      data = await response.json();
+    } catch {
+      throw new Error("Server ne valid response nahi diya. Vercel deployment check karein.");
+    }
+    if (!response.ok) throw new Error(data.error || "AI request failed.");
+if (typeof data.reply !== "string" || !data.reply.trim()) throw new Error("Gemini ka jawab khali tha.");    thinkingBubble.replaceChildren();
+    const label = document.createElement("strong");
+    label.style.color = "var(--gold)";
+    label.textContent = "Gemini AI";
+    const body = document.createElement("div");
+    body.style.marginTop = "7px";
+body.textContent = data.reply.trim();    thinkingBubble.append(label, body);
+chatHistory.push({ role: "assistant", text: data.reply.trim() });  } catch (error) {
+    thinkingBubble.replaceChildren();
+    const label = document.createElement("strong");
+    label.style.color = "var(--gold)";
+    label.textContent = "Chat error";
+    const body = document.createElement("div");
+    body.style.marginTop = "7px";
+    body.textContent = error.message;
+    thinkingBubble.append(label, body);
+  } finally {
+    sendChatBtn.disabled = false;
+    chatInput.focus();
+  }
+});
+
+document.getElementById("clearChatBtn").addEventListener("click", () => {
+  chatHistory = [];
+  chatMessages.replaceChildren();
+  addChatMessage("assistant", "Chat cleared. What would you like to ask?");
+});
+
+
 document.getElementById("generateBtn").addEventListener("click", generatePost);
 
 document.getElementById("copyBtn").addEventListener("click", async () => {
@@ -614,7 +721,8 @@ document.getElementById("clearHistory").addEventListener("click", () => {
 
   document.getElementById("totalPosts").textContent = "0";
   document.getElementById("postResult").classList.add("hidden");
-  document.getElementById("copyBtn").classList.add("hidden"); 
+  document.getElementById("copyBtn").classList.add("hidden");
+
   renderHistory();
 });
 
