@@ -17,8 +17,7 @@ export default async function handler(req, res) {
   }
 
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 20000);
-
+const timeout = setTimeout(() => controller.abort(), 55000);
   try {
     const { business, product, platform, tone, details } =
       req.body || {};
