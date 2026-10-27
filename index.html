@@ -17,7 +17,8 @@
 }
 * { box-sizing: border-box; }
 body {
-  margin: 0;   background: var(--bg);
+  margin: 0;
+  background: var(--bg);
   color: var(--text);
   font-family: Arial, Helvetica, sans-serif;
 }
@@ -198,6 +199,7 @@ textarea { resize: vertical; min-height: 100px; }
   padding: 25px 10px;
 }
 .mobile-menu { display: none; }
+
 @media(max-width: 850px) {
   .sidebar { width: 205px; }
   .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -286,17 +288,21 @@ textarea { resize: vertical; min-height: 100px; }
             <p class="muted">Create original content for your business.</p>
             <button class="btn-outline" data-go="tools">Open Post Creator →</button>
           </div>
+
           <div class="card">
             <div class="tool-icon">💬</div>
             <h3>Gemini AI Chat</h3>
             <p class="muted">Ask questions, brainstorm ideas and get help with everyday tasks.</p>
             <button class="btn-outline" data-go="chat">Open AI Chat →</button>
           </div>
+
           <div class="card">
             <div class="tool-icon">📢</div>
             <h3>Advertisement Ideas</h3>
             <p class="muted">Draft promotional copy for a product or service.</p>
-<button class="btn-outline" data-go="advertisement">Create Advertisement →</button>        </div>
+            <button class="btn-outline" data-go="advertisement">Create Advertisement →</button>
+          </div>
+        </div>
       </section>
 
       <section id="tools" class="page hidden">
@@ -351,7 +357,7 @@ textarea { resize: vertical; min-height: 100px; }
         </div>
       </section>
 
-             <section id="advertisement" class="page hidden">
+      <section id="advertisement" class="page hidden">
         <div class="welcome">
           <div class="eyebrow">GEMINI AI ADVERTISING</div>
           <h1>Advertisement <span class="gold">Generator</span></h1>
@@ -399,16 +405,20 @@ textarea { resize: vertical; min-height: 100px; }
           <div id="adResult" class="result hidden" aria-live="polite"></div>
           <button class="btn-outline hidden" id="copyAdBtn" style="margin-top:14px">Copy Advertisement</button>
         </div>
-      </section> <section id="chat" class="page hidden">
+      </section>
+
+      <section id="chat" class="page hidden">
         <div class="welcome">
           <div class="eyebrow">GEMINI-POWERED ASSISTANT</div>
           <h1>Ask <span class="gold">Gemini AI.</span></h1>
           <p>Ask a question, get ideas, or request help with your business. Your API key stays on the server.</p>
         </div>
+
         <div class="card">
           <div id="chatMessages" aria-live="polite" style="display:flex;flex-direction:column;gap:12px;margin-bottom:18px">
             <div class="result" style="margin-top:0">Hello! I am your AI assistant. What would you like help with?</div>
           </div>
+
           <form id="chatForm">
             <div class="field">
               <label for="chatInput">Your message</label>
@@ -417,6 +427,7 @@ textarea { resize: vertical; min-height: 100px; }
             <button class="btn" id="sendChatBtn" type="submit">Send Message →</button>
             <button class="btn-outline" id="clearChatBtn" type="button">Clear Chat</button>
           </form>
+
           <p class="muted" style="font-size:12px">Note: Gemini's free-tier daily quota may temporarily run out. If that happens, wait for the quota reset; no paid upgrade is required for this prototype.</p>
         </div>
       </section>
@@ -463,13 +474,16 @@ textarea { resize: vertical; min-height: 100px; }
 "use strict";
 
 const API_URL = "/api/generate-post";
-  const AD_API_URL = "/api/generate-ad";
+const AD_API_URL = "/api/generate-ad";
 const CHAT_API_URL = "/api/chat";
 const SETTINGS_KEY = "raza_ai_settings";
 const HISTORY_KEY = "raza_ai_history";
+
 const pages = ["dashboard", "tools", "advertisement", "chat", "history", "settings"];
+
 let historyItems = [];
 let currentPost = "";
+let currentAd = "";
 
 function safeRead(key, fallback) {
   try {
@@ -490,8 +504,7 @@ function saveCurrentSettings() {
     return false;
   }
 
-  const settings = { name, tagline };
-  localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify({ name, tagline }));
 
   document.querySelector(".brand").textContent = name;
   document.querySelector(".brand-sub").textContent = tagline;
@@ -502,14 +515,17 @@ function saveCurrentSettings() {
 
 function loadSavedSettings() {
   const settings = safeRead(SETTINGS_KEY, {});
+
   if (settings.name) {
     document.getElementById("workspaceName").value = settings.name;
     document.querySelector(".brand").textContent = settings.name;
   }
+
   if (settings.tagline) {
     document.getElementById("tagline").value = settings.tagline;
     document.querySelector(".brand-sub").textContent = settings.tagline;
   }
+
   if (settings.name || settings.tagline) {
     document.querySelector(".footer").textContent =
       (settings.name || "RAZA TECHNOLOGIES AI") + " · " +
@@ -550,6 +566,7 @@ function renderHistory() {
     const copyButton = document.createElement("button");
     copyButton.className = "btn-outline";
     copyButton.textContent = "Copy This Post";
+
     copyButton.addEventListener("click", async () => {
       try {
         await navigator.clipboard.writeText(item.text);
@@ -575,14 +592,15 @@ function showPage(page) {
     button.classList.toggle("active", button.dataset.page === page);
   });
 
- const titles = {
-  dashboard: "Dashboard",
-  tools: "AI Tools",
-  advertisement: "Advertisement Generator",
-  chat: "Gemini AI Chat",
-  history: "History",
-  settings: "Settings"
-};
+  const titles = {
+    dashboard: "Dashboard",
+    tools: "AI Tools",
+    advertisement: "Advertisement Generator",
+    chat: "Gemini AI Chat",
+    history: "History",
+    settings: "Settings"
+  };
+
   document.getElementById("pageTitle").textContent = titles[page];
   document.getElementById("sidebar").classList.remove("open");
 }
@@ -599,60 +617,8 @@ document.getElementById("menuBtn").addEventListener("click", () => {
   document.getElementById("sidebar").classList.toggle("open");
 });
 
-async function generatePost() { 
-let currentAd = "";
-
-async function generateAdvertisement() {
-  const payload = {
-    business: document.getElementById("adBusiness").value.trim(),
-    product: document.getElementById("adProduct").value.trim(),
-    platform: document.getElementById("adPlatform").value,
-    tone: document.getElementById("adTone").value,
-    details: document.getElementById("adDetails").value.trim()
-  };
-
-  if (!payload.business || !payload.product) {
-    alert("Business name aur product ka naam likhein.");
-    return;
-  }
-
-  const resultBox = document.getElementById("adResult");
-  const generateBtn = document.getElementById("generateAdBtn");
-  const copyBtn = document.getElementById("copyAdBtn");
-
-  resultBox.classList.remove("hidden");
-  resultBox.textContent = "Gemini AI advertisement bana raha hai...";
-  generateBtn.disabled = true;
-  copyBtn.classList.add("hidden");
-
-  try {
-    const response = await fetch(AD_API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.error || "Advertisement generate nahi hui.");
-    }
-
-    if (!data.text || !data.text.trim()) {
-      throw new Error("AI se advertisement ka text nahi mila.");
-    }
-
-    currentAd = data.text.trim();
-    resultBox.textContent = currentAd;
-    copyBtn.classList.remove("hidden");
-
-  } catch (error) {
-    resultBox.textContent = "Error: " + error.message;
-  } finally {
-    generateBtn.disabled = false;
-  }
-}
-
+/* SOCIAL MEDIA POST GENERATOR */
+async function generatePost() {
   const payload = {
     business: document.getElementById("business").value.trim(),
     product: document.getElementById("product").value.trim(),
@@ -668,19 +634,6 @@ async function generateAdvertisement() {
 
   const resultBox = document.getElementById("postResult");
   const generateBtn = document.getElementById("generateBtn");
-document.getElementById("generateAdBtn").addEventListener("click", generateAdvertisement);
-
-document.getElementById("copyAdBtn").addEventListener("click", async () => {
-  if (!currentAd) return;
-
-  try {
-    await navigator.clipboard.writeText(currentAd);
-    alert("Advertisement copy ho gayi!");
-  } catch (error) {
-    alert("Copy nahi hui. Advertisement ka text select karke manually copy karein.");
-  }
-});
-
   const copyBtn = document.getElementById("copyBtn");
 
   resultBox.classList.remove("hidden");
@@ -696,6 +649,7 @@ document.getElementById("copyAdBtn").addEventListener("click", async () => {
     });
 
     let data;
+
     try {
       data = await response.json();
     } catch {
@@ -734,83 +688,67 @@ document.getElementById("copyAdBtn").addEventListener("click", async () => {
   }
 }
 
+/* ADVERTISEMENT GENERATOR */
+async function generateAdvertisement() {
+  const payload = {
+    business: document.getElementById("adBusiness").value.trim(),
+    product: document.getElementById("adProduct").value.trim(),
+    platform: document.getElementById("adPlatform").value,
+    tone: document.getElementById("adTone").value,
+    details: document.getElementById("adDetails").value.trim()
+  };
 
-const chatForm = document.getElementById("chatForm");
-const chatInput = document.getElementById("chatInput");
-const chatMessages = document.getElementById("chatMessages");
-const sendChatBtn = document.getElementById("sendChatBtn");
-let chatHistory = [];
+  if (!payload.business || !payload.product) {
+    alert("Business name aur product ka naam likhein.");
+    return;
+  }
 
-function addChatMessage(role, text) {
-  const bubble = document.createElement("div");
-  bubble.className = "result";
-  bubble.style.marginTop = "0";
-  bubble.style.borderColor = role === "user" ? "#66541d" : "#393329";
-  const label = document.createElement("strong");
-  label.style.color = "var(--gold)";
-  label.textContent = role === "user" ? "You" : "Gemini AI";
-  const body = document.createElement("div");
-  body.style.marginTop = "7px";
-  body.textContent = text;
-  bubble.append(label, body);
-  chatMessages.appendChild(bubble);
-  chatMessages.scrollTop = chatMessages.scrollHeight;
-  return bubble;
-}
+  const resultBox = document.getElementById("adResult");
+  const generateBtn = document.getElementById("generateAdBtn");
+  const copyBtn = document.getElementById("copyAdBtn");
 
-chatForm.addEventListener("submit", async (event) => {
-  event.preventDefault();
-  const message = chatInput.value.trim();
-  if (!message) return;
-
-  addChatMessage("user", message);
-  chatHistory.push({ role: "user", text: message });
-  chatInput.value = "";
-  sendChatBtn.disabled = true;
-  const thinkingBubble = addChatMessage("assistant", "Gemini is thinking...");
+  resultBox.classList.remove("hidden");
+  resultBox.textContent = "Gemini AI advertisement bana raha hai...";
+  generateBtn.disabled = true;
+  copyBtn.classList.add("hidden");
+  currentAd = "";
 
   try {
-    const response = await fetch(CHAT_API_URL, {
+    const response = await fetch(AD_API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message, history: chatHistory.slice(-12, -1) })
+      body: JSON.stringify(payload)
     });
+
     let data;
+
     try {
       data = await response.json();
     } catch {
       throw new Error("Server ne valid response nahi diya. Vercel deployment check karein.");
     }
-    if (!response.ok) throw new Error(data.error || "AI request failed.");
-if (typeof data.reply !== "string" || !data.reply.trim()) throw new Error("Gemini ka jawab khali tha.");    thinkingBubble.replaceChildren();
-    const label = document.createElement("strong");
-    label.style.color = "var(--gold)";
-    label.textContent = "Gemini AI";
-    const body = document.createElement("div");
-    body.style.marginTop = "7px";
-body.textContent = data.reply.trim();    thinkingBubble.append(label, body);
-chatHistory.push({ role: "assistant", text: data.reply.trim() });  } catch (error) {
-    thinkingBubble.replaceChildren();
-    const label = document.createElement("strong");
-    label.style.color = "var(--gold)";
-    label.textContent = "Chat error";
-    const body = document.createElement("div");
-    body.style.marginTop = "7px";
-    body.textContent = error.message;
-    thinkingBubble.append(label, body);
+
+    if (!response.ok) {
+      throw new Error(data.error || data.message || "Advertisement generate nahi hui.");
+    }
+
+    if (typeof data.text !== "string" || !data.text.trim()) {
+      throw new Error(data.error || "AI se advertisement ka text nahi mila.");
+    }
+
+    currentAd = data.text.trim();
+    resultBox.textContent = currentAd;
+    copyBtn.classList.remove("hidden");
+
+  } catch (error) {
+    console.error("Advertisement generation failed:", error);
+    resultBox.textContent = "Advertisement generate nahi hui: " + error.message;
   } finally {
-    sendChatBtn.disabled = false;
-    chatInput.focus();
+    generateBtn.disabled = false;
   }
-});
+}
 
-document.getElementById("clearChatBtn").addEventListener("click", () => {
-  chatHistory = [];
-  chatMessages.replaceChildren();
-  addChatMessage("assistant", "Chat cleared. What would you like to ask?");
-});
-
-
+/* POST AND ADVERTISEMENT BUTTONS */
 document.getElementById("generateBtn").addEventListener("click", generatePost);
 
 document.getElementById("copyBtn").addEventListener("click", async () => {
@@ -824,6 +762,125 @@ document.getElementById("copyBtn").addEventListener("click", async () => {
   }
 });
 
+document.getElementById("generateAdBtn").addEventListener("click", generateAdvertisement);
+
+document.getElementById("copyAdBtn").addEventListener("click", async () => {
+  if (!currentAd) return;
+
+  try {
+    await navigator.clipboard.writeText(currentAd);
+    alert("Advertisement copy ho gayi!");
+  } catch (error) {
+    alert("Copy nahi hui. Advertisement ka text select karke manually copy karein.");
+  }
+});
+
+/* GEMINI AI CHAT */
+const chatForm = document.getElementById("chatForm");
+const chatInput = document.getElementById("chatInput");
+const chatMessages = document.getElementById("chatMessages");
+const sendChatBtn = document.getElementById("sendChatBtn");
+
+let chatHistory = [];
+
+function addChatMessage(role, text) {
+  const bubble = document.createElement("div");
+  bubble.className = "result";
+  bubble.style.marginTop = "0";
+  bubble.style.borderColor = role === "user" ? "#66541d" : "#393329";
+
+  const label = document.createElement("strong");
+  label.style.color = "var(--gold)";
+  label.textContent = role === "user" ? "You" : "Gemini AI";
+
+  const body = document.createElement("div");
+  body.style.marginTop = "7px";
+  body.textContent = text;
+
+  bubble.append(label, body);
+  chatMessages.appendChild(bubble);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+
+  return bubble;
+}
+
+chatForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const message = chatInput.value.trim();
+  if (!message) return;
+
+  addChatMessage("user", message);
+  chatHistory.push({ role: "user", text: message });
+  chatInput.value = "";
+  sendChatBtn.disabled = true;
+
+  const thinkingBubble = addChatMessage("assistant", "Gemini is thinking...");
+
+  try {
+    const response = await fetch(CHAT_API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        message,
+        history: chatHistory.slice(-12, -1)
+      })
+    });
+
+    let data;
+
+    try {
+      data = await response.json();
+    } catch {
+      throw new Error("Server ne valid response nahi diya. Vercel deployment check karein.");
+    }
+
+    if (!response.ok) {
+      throw new Error(data.error || "AI request failed.");
+    }
+
+    if (typeof data.reply !== "string" || !data.reply.trim()) {
+      throw new Error("Gemini ka jawab khali tha.");
+    }
+
+    thinkingBubble.replaceChildren();
+
+    const label = document.createElement("strong");
+    label.style.color = "var(--gold)";
+    label.textContent = "Gemini AI";
+
+    const body = document.createElement("div");
+    body.style.marginTop = "7px";
+    body.textContent = data.reply.trim();
+
+    thinkingBubble.append(label, body);
+    chatHistory.push({ role: "assistant", text: data.reply.trim() });
+
+  } catch (error) {
+    thinkingBubble.replaceChildren();
+
+    const label = document.createElement("strong");
+    label.style.color = "var(--gold)";
+    label.textContent = "Chat error";
+
+    const body = document.createElement("div");
+    body.style.marginTop = "7px";
+    body.textContent = error.message;
+
+    thinkingBubble.append(label, body);
+  } finally {
+    sendChatBtn.disabled = false;
+    chatInput.focus();
+  }
+});
+
+document.getElementById("clearChatBtn").addEventListener("click", () => {
+  chatHistory = [];
+  chatMessages.replaceChildren();
+  addChatMessage("assistant", "Chat cleared. What would you like to ask?");
+});
+
+/* HISTORY */
 document.getElementById("clearHistory").addEventListener("click", () => {
   if (!confirm("Are you sure you want to clear saved post history?")) return;
 
@@ -838,13 +895,16 @@ document.getElementById("clearHistory").addEventListener("click", () => {
   renderHistory();
 });
 
+/* SETTINGS */
 document.getElementById("saveSettings").addEventListener("click", () => {
   const saved = saveCurrentSettings();
+
   document.getElementById("settingsMessage").textContent = saved
     ? "Profile saved in this browser."
     : "Please enter a workspace name.";
 });
 
+/* INITIAL LOAD */
 historyItems = safeRead(HISTORY_KEY, []);
 if (!Array.isArray(historyItems)) historyItems = [];
 
