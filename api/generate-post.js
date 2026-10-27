@@ -1,4 +1,3 @@
-
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({
@@ -17,7 +16,8 @@ export default async function handler(req, res) {
   }
 
   const controller = new AbortController();
-const timeout = setTimeout(() => controller.abort(), 55000);
+  const timeout = setTimeout(() => controller.abort(), 55000);
+
   try {
     const { business, product, platform, tone, details } =
       req.body || {};
@@ -34,22 +34,25 @@ const timeout = setTimeout(() => controller.abort(), 55000);
       });
     }
 
-    const prompt = `Write one ready-to-publish social media post.
+    const prompt = `Create one persuasive advertisement for a business.
 
-Business: ${business.trim()}
+Business name: ${business.trim()}
 Product or service: ${product.trim()}
 Platform: ${platform || "Facebook"}
 Tone: ${tone || "Professional"}
-Additional instructions: ${details || "Keep it concise and engaging."}
+Additional details: ${details || "Create concise, engaging promotional copy."}
 
-Rules:
-- Follow the user's instructions carefully.
-- Return only the finished post.
-- Do not invent product features, prices, or guarantees.
-- Keep the post concise unless another length is requested.`;
+Requirements:
+- Write an attention-grabbing headline.
+- Explain the product or service using only provided facts.
+- Include a clear call to action.
+- Make the ad suitable for the selected platform.
+- Do not invent prices, discounts, features, guarantees, or contact details.
+- Return only the finished advertisement.`;
 
     const response = await fetch(
-"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent",      {
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent",
+      {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -64,8 +67,8 @@ Rules:
             }
           ],
           generationConfig: {
-            temperature: 0.5,
-            maxOutputTokens: 300
+            temperature: 0.6,
+            maxOutputTokens: 400
           }
         })
       }
@@ -74,7 +77,7 @@ Rules:
     const data = await response.json();
 
     if (!response.ok) {
-      console.error("Gemini API error:", data);
+      console.error("Gemini Advertisement API error:", data);
 
       return res.status(502).json({
         success: false,
@@ -89,11 +92,9 @@ Rules:
       .trim();
 
     if (!text) {
-      console.error("Gemini returned no text:", data);
-
       return res.status(502).json({
         success: false,
-        error: "Gemini ne post return nahi ki. Dobara try karein."
+        error: "Gemini ne advertisement return nahi ki. Dobara try karein."
       });
     }
 
@@ -104,17 +105,15 @@ Rules:
     });
 
   } catch (error) {
-    console.error("Generate post error:", error);
+    console.error("Generate advertisement error:", error);
 
-    const timedOut =
-      error.name === "AbortError" ||
-      error.name === "TimeoutError";
+    const timedOut = error.name === "AbortError";
 
     return res.status(timedOut ? 504 : 500).json({
       success: false,
       error: timedOut
-        ? "Gemini ko jawab dene mein 20 seconds se zyada lage. Dobara try karein."
-        : "Backend request fail hui. Vercel Function Logs check karein."
+        ? "Gemini ko jawab dene mein zyada waqt laga. Dobara try karein."
+        : "Advertisement request fail hui. Vercel Function Logs check karein."
     });
 
   } finally {
