@@ -1,22 +1,11 @@
-export default async function handler(req, res) {
+
+module.exports = async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({
       success: false,
-      error: "Method not allowed"
+      text: "Method not allowed"
     });
   }
-
-  const apiKey = process.env.GEMINI_API_KEY;
-
-  if (!apiKey) {
-    return res.status(500).json({
-      success: false,
-      error: "GEMINI_API_KEY Vercel environment mein set nahi hai."
-    });
-  }
-
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 55000);
 
   try {
     const { business, product, platform, tone, details } =
@@ -30,25 +19,36 @@ export default async function handler(req, res) {
     ) {
       return res.status(400).json({
         success: false,
-        error: "Business name aur product zaroori hain."
+        text: "Business name aur product zaroori hain."
       });
     }
 
-    const prompt = `Create one persuasive advertisement for a business.
+    const apiKey = process.env.GEMINI_API_KEY;
 
-Business name: ${business.trim()}
+    if (!apiKey) {
+      return res.status(500).json({
+        success: false,
+        text: "GEMINI_API_KEY Vercel Environment Variables mein set nahi hai."
+      });
+    }
+
+    const prompt = `You are a professional social media copywriter.
+
+Create one ready-to-publish social media post.
+
+Business: ${business.trim()}
 Product or service: ${product.trim()}
 Platform: ${platform || "Facebook"}
 Tone: ${tone || "Professional"}
-Additional details: ${details || "Create concise, engaging promotional copy."}
+Extra details: ${details || "None"}
 
 Requirements:
-- Write an attention-grabbing headline.
-- Explain the product or service using only provided facts.
+- Write an engaging opening.
+- Promote the product using only the supplied facts.
 - Include a clear call to action.
-- Make the ad suitable for the selected platform.
-- Do not invent prices, discounts, features, guarantees, or contact details.
-- Return only the finished advertisement.`;
+- Add relevant hashtags.
+- Do not invent prices, discounts, guarantees or product claims.
+- Return only the finished post.`;
 
     const response = await fetch(
       "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent",
@@ -58,7 +58,6 @@ Requirements:
           "Content-Type": "application/json",
           "x-goog-api-key": apiKey
         },
-        signal: controller.signal,
         body: JSON.stringify({
           contents: [
             {
@@ -67,8 +66,8 @@ Requirements:
             }
           ],
           generationConfig: {
-            temperature: 0.6,
-            maxOutputTokens: 400
+            temperature: 0.7,
+            maxOutputTokens: 500
           }
         })
       }
@@ -77,46 +76,38 @@ Requirements:
     const data = await response.json();
 
     if (!response.ok) {
-      console.error("Gemini Advertisement API error:", data);
+      console.error("Gemini Generate Post error:", data);
 
       return res.status(502).json({
         success: false,
-        error: data.error?.message ||
-          `Gemini API request failed (${response.status}).`
+        text: data.error?.message ||
+          "Gemini API request failed."
       });
     }
 
     const text = data.candidates?.[0]?.content?.parts
       ?.map(part => part.text || "")
-      .join("")
+      .join("\n")
       .trim();
 
     if (!text) {
       return res.status(502).json({
         success: false,
-        error: "Gemini ne advertisement return nahi ki. Dobara try karein."
+        text: "Gemini ne post return nahi ki. Dobara try karein."
       });
     }
 
     return res.status(200).json({
       success: true,
-      demo: false,
       text
     });
 
   } catch (error) {
-    console.error("Generate advertisement error:", error);
+    console.error("Generate Post error:", error);
 
-    const timedOut = error.name === "AbortError";
-
-    return res.status(timedOut ? 504 : 500).json({
+    return res.status(500).json({
       success: false,
-      error: timedOut
-        ? "Gemini ko jawab dene mein zyada waqt laga. Dobara try karein."
-        : "Advertisement request fail hui. Vercel Function Logs check karein."
+      text: "Post generate nahi hui. Vercel Function Logs check karein."
     });
-
-  } finally {
-    clearTimeout(timeout);
   }
-}
+};
