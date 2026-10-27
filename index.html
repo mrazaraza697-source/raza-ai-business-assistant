@@ -296,9 +296,7 @@ textarea { resize: vertical; min-height: 100px; }
             <div class="tool-icon">📢</div>
             <h3>Advertisement Ideas</h3>
             <p class="muted">Draft promotional copy for a product or service.</p>
-            <button class="btn-outline" data-go="tools">Explore Tools →</button>
-          </div>
-        </div>
+<button class="btn-outline" data-go="advertisement">Create Advertisement →</button>        </div>
       </section>
 
       <section id="tools" class="page hidden">
@@ -353,7 +351,55 @@ textarea { resize: vertical; min-height: 100px; }
         </div>
       </section>
 
-      <section id="chat" class="page hidden">
+             <section id="advertisement" class="page hidden">
+        <div class="welcome">
+          <div class="eyebrow">GEMINI AI ADVERTISING</div>
+          <h1>Advertisement <span class="gold">Generator</span></h1>
+          <p>Apne business ke liye AI se promotional advertisement banayein.</p>
+        </div>
+
+        <div class="card">
+          <h3>📢 Create an Advertisement</h3>
+
+          <div class="field">
+            <label for="adBusiness">Business or brand name</label>
+            <input id="adBusiness" placeholder="Apne business ka naam likhein">
+          </div>
+
+          <div class="field">
+            <label for="adProduct">Product or service</label>
+            <input id="adProduct" placeholder="Product ya service ka naam">
+          </div>
+
+          <div class="field">
+            <label for="adPlatform">Advertisement platform</label>
+            <select id="adPlatform">
+              <option>Facebook</option>
+              <option>Instagram</option>
+              <option>WhatsApp</option>
+              <option>LinkedIn</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="adTone">Advertisement style</label>
+            <select id="adTone">
+              <option>Professional</option>
+              <option>Friendly</option>
+              <option>Promotional</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="adDetails">Extra details (optional)</label>
+            <textarea id="adDetails" placeholder="Offer, audience ya doosri maloomat"></textarea>
+          </div>
+
+          <button class="btn" id="generateAdBtn">Generate Advertisement →</button>
+          <div id="adResult" class="result hidden" aria-live="polite"></div>
+          <button class="btn-outline hidden" id="copyAdBtn" style="margin-top:14px">Copy Advertisement</button>
+        </div>
+      </section> <section id="chat" class="page hidden">
         <div class="welcome">
           <div class="eyebrow">GEMINI-POWERED ASSISTANT</div>
           <h1>Ask <span class="gold">Gemini AI.</span></h1>
@@ -417,11 +463,11 @@ textarea { resize: vertical; min-height: 100px; }
 "use strict";
 
 const API_URL = "/api/generate-post";
+  const AD_API_URL = "/api/generate-ad";
 const CHAT_API_URL = "/api/chat";
 const SETTINGS_KEY = "raza_ai_settings";
 const HISTORY_KEY = "raza_ai_history";
-const pages = ["dashboard", "tools", "chat", "history", "settings"];
-
+const pages = ["dashboard", "tools", "advertisement", "chat", "history", "settings"];
 let historyItems = [];
 let currentPost = "";
 
@@ -529,14 +575,14 @@ function showPage(page) {
     button.classList.toggle("active", button.dataset.page === page);
   });
 
-  const titles = {
-    dashboard: "Dashboard",
-    tools: "AI Tools",
-    chat: "Gemini AI Chat",
-    history: "History",
-    settings: "Settings"
-  };
-
+ const titles = {
+  dashboard: "Dashboard",
+  tools: "AI Tools",
+  advertisement: "Advertisement Generator",
+  chat: "Gemini AI Chat",
+  history: "History",
+  settings: "Settings"
+};
   document.getElementById("pageTitle").textContent = titles[page];
   document.getElementById("sidebar").classList.remove("open");
 }
@@ -553,7 +599,60 @@ document.getElementById("menuBtn").addEventListener("click", () => {
   document.getElementById("sidebar").classList.toggle("open");
 });
 
-async function generatePost() {
+async function generatePost() { 
+let currentAd = "";
+
+async function generateAdvertisement() {
+  const payload = {
+    business: document.getElementById("adBusiness").value.trim(),
+    product: document.getElementById("adProduct").value.trim(),
+    platform: document.getElementById("adPlatform").value,
+    tone: document.getElementById("adTone").value,
+    details: document.getElementById("adDetails").value.trim()
+  };
+
+  if (!payload.business || !payload.product) {
+    alert("Business name aur product ka naam likhein.");
+    return;
+  }
+
+  const resultBox = document.getElementById("adResult");
+  const generateBtn = document.getElementById("generateAdBtn");
+  const copyBtn = document.getElementById("copyAdBtn");
+
+  resultBox.classList.remove("hidden");
+  resultBox.textContent = "Gemini AI advertisement bana raha hai...";
+  generateBtn.disabled = true;
+  copyBtn.classList.add("hidden");
+
+  try {
+    const response = await fetch(AD_API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Advertisement generate nahi hui.");
+    }
+
+    if (!data.text || !data.text.trim()) {
+      throw new Error("AI se advertisement ka text nahi mila.");
+    }
+
+    currentAd = data.text.trim();
+    resultBox.textContent = currentAd;
+    copyBtn.classList.remove("hidden");
+
+  } catch (error) {
+    resultBox.textContent = "Error: " + error.message;
+  } finally {
+    generateBtn.disabled = false;
+  }
+}
+
   const payload = {
     business: document.getElementById("business").value.trim(),
     product: document.getElementById("product").value.trim(),
@@ -569,6 +668,19 @@ async function generatePost() {
 
   const resultBox = document.getElementById("postResult");
   const generateBtn = document.getElementById("generateBtn");
+document.getElementById("generateAdBtn").addEventListener("click", generateAdvertisement);
+
+document.getElementById("copyAdBtn").addEventListener("click", async () => {
+  if (!currentAd) return;
+
+  try {
+    await navigator.clipboard.writeText(currentAd);
+    alert("Advertisement copy ho gayi!");
+  } catch (error) {
+    alert("Copy nahi hui. Advertisement ka text select karke manually copy karein.");
+  }
+});
+
   const copyBtn = document.getElementById("copyBtn");
 
   resultBox.classList.remove("hidden");
